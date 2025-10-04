@@ -6,21 +6,18 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
+use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 
-class User extends Authenticatable
+class Admin extends Authenticatable implements FilamentUser
 {
-    use HasFactory, Notifiable, HasUuids, HasRoles;
+    use HasFactory, Notifiable, HasUuids;
 
-    // ... (property $fillable, $hidden, $casts tetap sama) ...
     protected $fillable = [
         'name',
         'email',
         'password',
         'role',
-        'avatar_url',
-        'bio',
         'is_active',
         'last_login_at',
         'last_login_ip',
@@ -32,14 +29,16 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected function casts(): array
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'is_active' => 'boolean',
+        'last_login_at' => 'datetime',
+        'settings' => 'array',
+    ];
+
+    public function canAccessPanel(Panel $panel): bool
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_active' => 'boolean',
-            'last_login_at' => 'datetime',
-            'settings' => 'array',
-        ];
+        return true;
     }
 }
