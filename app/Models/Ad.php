@@ -27,6 +27,10 @@ class Ad extends Model
         'end_date',
         'max_impressions',
         'max_clicks',
+        'current_impressions',
+        'current_clicks',
+        'click_rate',
+        'status',
         'created_by',
         'updated_by',
     ];
@@ -38,6 +42,12 @@ class Ad extends Model
         'is_active' => 'boolean',
         'start_date' => 'datetime',
         'end_date' => 'datetime',
+        'priority' => 'integer',
+        'max_impressions' => 'integer',
+        'max_clicks' => 'integer',
+        'current_impressions' => 'integer',
+        'current_clicks' => 'integer',
+        'click_rate' => 'decimal:2',
     ];
 
     public function tenant(): BelongsTo

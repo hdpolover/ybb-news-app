@@ -28,6 +28,9 @@ class NewsletterSubscription extends Model
         'ip_address',
         'user_agent',
         'last_sent_at',
+        'emails_sent',
+        'emails_opened',
+        'links_clicked',
     ];
 
     protected $casts = [
@@ -35,6 +38,9 @@ class NewsletterSubscription extends Model
         'tags' => 'array',
         'verified_at' => 'datetime',
         'last_sent_at' => 'datetime',
+        'emails_sent' => 'integer',
+        'emails_opened' => 'integer',
+        'links_clicked' => 'integer',
     ];
 
     public function tenant(): BelongsTo

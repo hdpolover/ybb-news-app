@@ -6,6 +6,7 @@ use App\Filament\Resources\AdResource\Pages;
 use App\Models\Ad;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -28,21 +29,49 @@ class AdResource extends Resource
                 Forms\Components\TextInput::make('title')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('placement')
+                    ->required()
+                    ->helperText('e.g., sidebar_top, post_bottom'),
                 Forms\Components\Select::make('type')
                     ->options([
                         'banner' => 'Banner',
                         'text' => 'Text',
                         'video' => 'Video',
                     ])
+                    ->live()
                     ->required(),
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'active' => 'Active',
+                        'paused' => 'Paused',
+                        'archived' => 'Archived',
+                    ])
+                    ->default('active')
+                    ->required(),
+
+                Forms\Components\Section::make('Ad Content')
+                    ->schema([
+                        Forms\Components\FileUpload::make('content.image_url')
+                            ->label('Banner Image')
+                            ->visible(fn(Get $get) => $get('type') === 'banner'),
+                        Forms\Components\TextInput::make('content.target_link')
+                            ->label('Target Link')
+                            ->visible(fn(Get $get) => $get('type') === 'banner'),
+                        Forms\Components\TextInput::make('content.headline')
+                            ->label('Headline')
+                            ->visible(fn(Get $get) => $get('type') === 'text'),
+                        Forms\Components\Textarea::make('content.description')
+                            ->label('Description')
+                            ->visible(fn(Get $get) => $get('type') === 'text'),
+                        Forms\Components\TextInput::make('content.video_url')
+                            ->label('Video URL')
+                            ->visible(fn(Get $get) => $get('type') === 'video'),
+                    ]),
+
                 Forms\Components\Toggle::make('is_active')
                     ->required(),
                 Forms\Components\DateTimePicker::make('start_date'),
                 Forms\Components\DateTimePicker::make('end_date'),
-                Forms\Components\TextInput::make('max_impressions')
-                    ->numeric(),
-                Forms\Components\TextInput::make('max_clicks')
-                    ->numeric(),
             ]);
     }
 
@@ -54,14 +83,17 @@ class AdResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('tenant.name')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('type')
+                Tables\Columns\TextColumn::make('placement'),
+                Tables\Columns\TextColumn::make('status')
                     ->badge(),
+                Tables\Columns\TextColumn::make('current_impressions')
+                    ->label('Impressions')
+                    ->numeric(),
+                Tables\Columns\TextColumn::make('current_clicks')
+                    ->label('Clicks')
+                    ->numeric(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('start_date')
-                    ->dateTime(),
-                Tables\Columns\TextColumn::make('end_date')
-                    ->dateTime(),
             ])
             ->filters([
                 //

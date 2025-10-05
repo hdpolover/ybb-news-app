@@ -35,8 +35,9 @@ class NewsletterSubscriptionResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Select::make('status')
                     ->options([
-                        'subscribed' => 'Subscribed',
+                        'active' => 'Active',
                         'unsubscribed' => 'Unsubscribed',
+                        'bounced' => 'Bounced',
                         'pending' => 'Pending',
                     ])
                     ->required(),
@@ -51,10 +52,12 @@ class NewsletterSubscriptionResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('tenant.name')
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge(),
+                Tables\Columns\TextColumn::make('verified_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->label('Verified On'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),

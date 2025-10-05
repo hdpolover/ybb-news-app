@@ -39,6 +39,18 @@ class SeoLandingResource extends Resource
                     ->columnSpanFull(),
                 Forms\Components\Toggle::make('is_active')
                     ->required(),
+                Forms\Components\Select::make('index_status')
+                    ->options([
+                        'index' => 'Index',
+                        'noindex' => 'No Index',
+                    ])
+                    ->required(),
+                Forms\Components\Select::make('follow_status')
+                    ->options([
+                        'follow' => 'Follow',
+                        'nofollow' => 'No Follow',
+                    ])
+                    ->required(),
             ]);
     }
 
@@ -51,6 +63,9 @@ class SeoLandingResource extends Resource
                 Tables\Columns\TextColumn::make('slug'),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
+                Tables\Columns\TextColumn::make('views')
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('tenant.name')
                     ->sortable(),
             ])

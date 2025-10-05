@@ -26,7 +26,11 @@ class SeoLanding extends Model
         'target_filters',
         'content_type',
         'items_per_page',
+        'views',
+        'conversion_rate',
         'is_active',
+        'index_status',
+        'follow_status',
         'created_by',
         'updated_by',
     ];
@@ -35,6 +39,9 @@ class SeoLanding extends Model
         'schema_markup' => 'array',
         'target_filters' => 'array',
         'is_active' => 'boolean',
+        'items_per_page' => 'integer',
+        'views' => 'integer',
+        'conversion_rate' => 'decimal:2',
     ];
 
     public function tenant(): BelongsTo

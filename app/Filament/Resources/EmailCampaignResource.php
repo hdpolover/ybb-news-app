@@ -35,7 +35,9 @@ class EmailCampaignResource extends Resource
                     ->options([
                         'draft' => 'Draft',
                         'scheduled' => 'Scheduled',
+                        'sending' => 'Sending',
                         'sent' => 'Sent',
+                        'cancelled' => 'Cancelled',
                     ])
                     ->required(),
                 Forms\Components\DateTimePicker::make('scheduled_at'),
@@ -53,10 +55,17 @@ class EmailCampaignResource extends Resource
                 Tables\Columns\TextColumn::make('subject'),
                 Tables\Columns\TextColumn::make('status')
                     ->badge(),
-                Tables\Columns\TextColumn::make('scheduled_at')
-                    ->dateTime(),
+                Tables\Columns\TextColumn::make('open_rate')
+                    ->label('Open %')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('click_rate')
+                    ->label('Click %')
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('sent_at')
-                    ->dateTime(),
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([
                 //

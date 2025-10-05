@@ -38,6 +38,8 @@ class Media extends Model
         'custom_properties' => 'array',
         'generated_conversions' => 'array',
         'responsive_images' => 'array',
+        'size' => 'integer',
+        'order_column' => 'integer',
     ];
 
     public function tenant(): BelongsTo

@@ -44,6 +44,12 @@ class MediaResource extends Resource
                 Tables\Columns\ImageColumn::make('file_name')->disk('public'),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
+                // -- KOLOM BARU DITAMBAHKAN --
+                Tables\Columns\TextColumn::make('size')
+                    ->label('Size')
+                    ->numeric()
+                    ->sortable()
+                    ->formatStateUsing(fn(int $state): string => number_format($state / 1024, 1) . ' KB'),
                 Tables\Columns\TextColumn::make('mime_type'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
