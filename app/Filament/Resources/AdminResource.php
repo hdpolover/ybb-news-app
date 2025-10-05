@@ -35,6 +35,13 @@ class AdminResource extends Resource
                     ->dehydrateStateUsing(fn($state) => Hash::make($state))
                     ->dehydrated(fn($state) => filled($state))
                     ->required(fn(string $context): bool => $context === 'create'),
+                Forms\Components\Select::make('role')
+                    ->options([
+                        'superadmin' => 'Super Admin',
+                        'admin' => 'Admin',
+                        'support' => 'Support',
+                    ])
+                    ->required(),
                 Forms\Components\Toggle::make('is_active')
                     ->required(),
             ]);
@@ -47,6 +54,8 @@ class AdminResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('role')
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
