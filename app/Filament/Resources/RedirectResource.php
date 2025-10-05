@@ -35,9 +35,15 @@ class RedirectResource extends Resource
                     ->options([
                         '301' => '301 (Permanent)',
                         '302' => '302 (Temporary)',
+                        '307' => '307 (Temporary)',
+                        '308' => '308 (Permanent)',
                     ])
                     ->required(),
+                Forms\Components\RichEditor::make('description')
+                    ->columnSpanFull(),
                 Forms\Components\Toggle::make('is_active')
+                    ->required(),
+                Forms\Components\Toggle::make('is_automatic')
                     ->required(),
             ]);
     }
@@ -61,6 +67,7 @@ class RedirectResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
