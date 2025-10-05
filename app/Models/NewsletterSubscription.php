@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class NewsletterSubscription extends Model
 {
@@ -42,6 +43,15 @@ class NewsletterSubscription extends Model
         'emails_opened' => 'integer',
         'links_clicked' => 'integer',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            $model->unsubscribe_token = Str::uuid();
+        });
+    }
+
 
     public function tenant(): BelongsTo
     {
