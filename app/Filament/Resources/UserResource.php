@@ -23,31 +23,54 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->dehydrateStateUsing(fn($state) => Hash::make($state))
-                    ->dehydrated(fn($state) => filled($state))
-                    ->required(fn(string $context): bool => $context === 'create'),
-                Forms\Components\Select::make('role')
-                    ->options([
-                        'admin' => 'Admin',
-                        'editor' => 'Editor',
-                        'author' => 'Author',
-                        'seo' => 'SEO',
-                        'moderator' => 'Moderator',
-                        'analyst' => 'Analyst',
-                        'user' => 'User',
+                Forms\Components\Section::make('User Profile')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\FileUpload::make('avatar_url')
+                            ->label('Avatar')
+                            ->image()
+                            ->avatar(),
+                        Forms\Components\Textarea::make('bio')
+                            ->rows(3),
+                    ]),
+                Forms\Components\Section::make('Account Details')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('email')
+                            ->email()
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('password')
+                            ->password()
+                            ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                            ->dehydrated(fn($state) => filled($state))
+                            ->required(fn(string $context): bool => $context === 'create')
+                            ->helperText('Leave blank to keep the current password.'),
+                        Forms\Components\Select::make('role')
+                            ->options([
+                                'admin' => 'Admin',
+                                'editor' => 'Editor',
+                                'author' => 'Author',
+                                'seo' => 'SEO',
+                                'moderator' => 'Moderator',
+                                'analyst' => 'Analyst',
+                                'user' => 'User',
+                            ])
+                            ->required(),
+                        Forms\Components\Toggle::make('is_active')
+                            ->default(true)
+                            ->required(),
+                    ]),
+                Forms\Components\Section::make('Advanced Settings')
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\KeyValue::make('settings')
+                            ->label('User Settings'),
                     ])
-                    ->required(),
-                Forms\Components\Toggle::make('is_active')
-                    ->required(),
             ]);
     }
 
@@ -55,11 +78,15 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('avatar_url')
+                    ->label('Avatar')
+                    ->circular(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('role')
+                    ->badge()
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),

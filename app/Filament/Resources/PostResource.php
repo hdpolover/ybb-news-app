@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Filament\Forms\Components\Tabs;
 
 class PostResource extends Resource
 {
@@ -24,37 +25,81 @@ class PostResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Main Content')
-                    ->schema([
-                        Forms\Components\Select::make('tenant_id')
-                            ->relationship('tenant', 'name')
-                            ->required(),
-                        Forms\Components\TextInput::make('title')
-                            ->required()
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(fn(Forms\Set $set, ?string $state) => $set('slug', Str::slug($state))),
-                        Forms\Components\TextInput::make('slug')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\RichEditor::make('content')
-                            ->columnSpanFull(),
-                        Forms\Components\Select::make('kind')
-                            ->options([
-                                'article' => 'Article',
-                                'job' => 'Job',
-                                'program' => 'Program',
-                            ])
-                            ->live()
-                            ->required(),
-                        Forms\Components\Select::make('status')
-                            ->options([
-                                'draft' => 'Draft',
-                                'published' => 'Published',
-                                'scheduled' => 'Scheduled',
-                            ])
-                            ->required(),
-                        Forms\Components\DateTimePicker::make('published_at'),
-                    ])->columns(2),
+                Tabs::make('PostTabs')->tabs([
+                    Tabs\Tab::make('Content')
+                        ->schema([
+                            Forms\Components\TextInput::make('title')
+                                ->required()
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(fn(Forms\Set $set, ?string $state) => $set('slug', Str::slug($state)))
+                                ->columnSpanFull(),
+                            Forms\Components\TextInput::make('slug')
+                                ->required()
+                                ->unique(Post::class, 'slug', ignoreRecord: true)
+                                ->columnSpanFull(),
+                            Forms\Components\FileUpload::make('cover_image_url')
+                                ->label('Cover Image')
+                                ->image()
+                                ->disk('public')
+                                ->directory('post-covers')
+                                ->columnSpanFull(),
+                            Forms\Components\Textarea::make('excerpt')
+                                ->rows(3)
+                                ->columnSpanFull(),
+                            Forms\Components\RichEditor::make('content')
+                                ->columnSpanFull(),
+                        ]),
+                    Tabs\Tab::make('SEO')
+                        ->schema([
+                            Forms\Components\TextInput::make('meta_title'),
+                            Forms\Components\Textarea::make('meta_description'),
+                            Forms\Components\FileUpload::make('og_image_url')
+                                ->label('Social Media Image (OG)')
+                                ->image()
+                                ->disk('public')
+                                ->directory('post-og-images'),
+                            Forms\Components\TextInput::make('canonical_url')
+                                ->label('Canonical URL')
+                                ->url(),
+                        ]),
+                    Tabs\Tab::make('Details & Relations')
+                        ->schema([
+                            Forms\Components\Select::make('tenant_id')
+                                ->relationship('tenant', 'name')
+                                ->required(),
+                            Forms\Components\Select::make('kind')
+                                ->options([
+                                    'page' => 'Page',
+                                    'news' => 'News',
+                                    'guide' => 'Guide',
+                                    'program' => 'Program',
+                                    'job' => 'Job',
+                                ])
+                                ->live()
+                                ->required(),
+                            Forms\Components\Select::make('status')
+                                ->options([
+                                    'draft' => 'Draft',
+                                    'review' => 'In Review',
+                                    'scheduled' => 'Scheduled',
+                                    'published' => 'Published',
+                                    'archived' => 'Archived',
+                                ])
+                                ->live()
+                                ->required(),
+                            Forms\Components\DateTimePicker::make('published_at'),
+                            Forms\Components\DateTimePicker::make('scheduled_at')
+                                ->visible(fn(Get $get): bool => $get('status') === 'scheduled'),
+                            Forms\Components\Select::make('terms')
+                                ->relationship('terms', 'name')
+                                ->multiple()
+                                ->preload()
+                                ->searchable(),
+                            Forms\Components\Select::make('created_by')
+                                ->relationship('author', 'name')
+                                ->required(),
+                        ]),
+                ])->columnSpanFull(),
 
                 Forms\Components\Section::make('Job Details')
                     ->schema([
@@ -75,17 +120,6 @@ class PostResource extends Resource
                         Forms\Components\TextInput::make('program.apply_url')->url(),
                     ])
                     ->visible(fn(Get $get): bool => $get('kind') === 'program'),
-
-                Forms\Components\Section::make('Meta & Relations')
-                    ->schema([
-                        Forms\Components\Select::make('terms')
-                            ->relationship('terms', 'name')
-                            ->multiple()
-                            ->preload(),
-                        Forms\Components\Select::make('created_by')
-                            ->relationship('author', 'name')
-                            ->required(),
-                    ]),
             ]);
     }
 
@@ -93,6 +127,9 @@ class PostResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('cover_image_url')
+                    ->label('Cover')
+                    ->disk('public'),
                 Tables\Columns\TextColumn::make('title')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('tenant.name')
@@ -110,6 +147,7 @@ class PostResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -118,6 +156,7 @@ class PostResource extends Resource
             ]);
     }
 
+    // ... (getRelations dan getPages tetap sama) ...
     public static function getRelations(): array
     {
         return [
