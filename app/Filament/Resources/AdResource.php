@@ -23,55 +23,95 @@ class AdResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('tenant_id')
-                    ->relationship('tenant', 'name')
-                    ->required(),
-                Forms\Components\TextInput::make('title')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('placement')
-                    ->required()
-                    ->helperText('e.g., sidebar_top, post_bottom'),
-                Forms\Components\Select::make('type')
-                    ->options([
-                        'banner' => 'Banner',
-                        'text' => 'Text',
-                        'video' => 'Video',
-                    ])
-                    ->live()
-                    ->required(),
-                Forms\Components\Select::make('status')
-                    ->options([
-                        'active' => 'Active',
-                        'paused' => 'Paused',
-                        'archived' => 'Archived',
-                    ])
-                    ->default('active')
-                    ->required(),
+                Forms\Components\Section::make('Campaign Details')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\Select::make('tenant_id')
+                            ->relationship('tenant', 'name')
+                            ->required(),
+                        Forms\Components\TextInput::make('title')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Textarea::make('description')
+                            ->nullable()
+                            ->columnSpanFull(),
+                        Forms\Components\Select::make('type')
+                            ->options([
+                                'banner' => 'Banner',
+                                'text' => 'Text',
+                                'video' => 'Video',
+                            ])
+                            ->live()
+                            ->required(),
+                        Forms\Components\TextInput::make('placement')
+                            ->required()
+                            ->helperText('e.g., sidebar_top, post_bottom'),
+                        Forms\Components\Select::make('status')
+                            ->options([
+                                'active' => 'Active',
+                                'paused' => 'Paused',
+                                'archived' => 'Archived',
+                            ])
+                            ->default('active')
+                            ->required(),
+                        Forms\Components\Toggle::make('is_active')
+                            ->default(true)
+                            ->required(),
+                    ]),
 
                 Forms\Components\Section::make('Ad Content')
                     ->schema([
+                        // Banner Type Fields
                         Forms\Components\FileUpload::make('content.image_url')
                             ->label('Banner Image')
                             ->visible(fn(Get $get) => $get('type') === 'banner'),
                         Forms\Components\TextInput::make('content.target_link')
-                            ->label('Target Link')
-                            ->visible(fn(Get $get) => $get('type') === 'banner'),
+                            ->label('Target Link (for Banner/Text)')
+                            ->visible(fn(Get $get) => in_array($get('type'), ['banner', 'text'])),
+
+                        // Text Type Fields
                         Forms\Components\TextInput::make('content.headline')
                             ->label('Headline')
                             ->visible(fn(Get $get) => $get('type') === 'text'),
                         Forms\Components\Textarea::make('content.description')
-                            ->label('Description')
+                            ->label('Ad Text / Body')
                             ->visible(fn(Get $get) => $get('type') === 'text'),
+
+                        // Video Type Fields
                         Forms\Components\TextInput::make('content.video_url')
                             ->label('Video URL')
+                            ->helperText('e.g., YouTube or Vimeo URL')
                             ->visible(fn(Get $get) => $get('type') === 'video'),
                     ]),
 
-                Forms\Components\Toggle::make('is_active')
-                    ->required(),
-                Forms\Components\DateTimePicker::make('start_date'),
-                Forms\Components\DateTimePicker::make('end_date'),
+                Forms\Components\Section::make('Delivery & Performance')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('priority')
+                            ->numeric()
+                            ->default(0)
+                            ->helperText('Ads with higher numbers are shown more often.'),
+                        Forms\Components\TextInput::make('max_impressions')
+                            ->label('Max Impressions')
+                            ->numeric()
+                            ->helperText('Leave blank for unlimited impressions.'),
+                        Forms\Components\TextInput::make('max_clicks')
+                            ->label('Max Clicks')
+                            ->numeric()
+                            ->helperText('Leave blank for unlimited clicks.'),
+                        Forms\Components\DateTimePicker::make('start_date'),
+                        Forms\Components\DateTimePicker::make('end_date'),
+                    ]),
+
+                Forms\Components\Section::make('Advanced Settings')
+                    ->collapsible() // Opsi agar bisa disembunyikan
+                    ->schema([
+                        Forms\Components\KeyValue::make('targeting')
+                            ->label('Targeting Rules')
+                            ->helperText('e.g., key: country, value: Indonesia'),
+                        Forms\Components\KeyValue::make('settings')
+                            ->label('Additional Settings'),
+                    ]),
             ]);
     }
 
@@ -100,6 +140,7 @@ class AdResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
