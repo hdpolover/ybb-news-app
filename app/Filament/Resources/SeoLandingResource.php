@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Filament\Forms\Components\Tabs;
 
 class SeoLandingResource extends Resource
 {
@@ -25,32 +26,71 @@ class SeoLandingResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('tenant_id')
-                    ->relationship('tenant', 'name')
-                    ->required(),
-                Forms\Components\TextInput::make('title')
-                    ->required()
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(fn(Forms\Set $set, ?string $state) => $set('slug', Str::slug($state))),
-                Forms\Components\TextInput::make('slug')
-                    ->required(),
-                Forms\Components\TextInput::make('meta_title'),
-                Forms\Components\Textarea::make('meta_description')
-                    ->columnSpanFull(),
-                Forms\Components\Toggle::make('is_active')
-                    ->required(),
-                Forms\Components\Select::make('index_status')
-                    ->options([
-                        'index' => 'Index',
-                        'noindex' => 'No Index',
-                    ])
-                    ->required(),
-                Forms\Components\Select::make('follow_status')
-                    ->options([
-                        'follow' => 'Follow',
-                        'nofollow' => 'No Follow',
-                    ])
-                    ->required(),
+                Tabs::make('SeoLandingTabs')->tabs([
+                    Tabs\Tab::make('Main Content')
+                        ->schema([
+                            Forms\Components\TextInput::make('title')
+                                ->required()
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(fn(Forms\Set $set, ?string $state) => $set('slug', Str::slug($state)))
+                                ->columnSpanFull(),
+                            Forms\Components\TextInput::make('slug')
+                                ->required()
+                                ->columnSpanFull(),
+                            Forms\Components\RichEditor::make('content')
+                                ->columnSpanFull(),
+                        ]),
+                    Tabs\Tab::make('SEO Settings')
+                        ->schema([
+                            Forms\Components\TextInput::make('meta_title')
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('target_keyword')
+                                ->label('Target Keyword'),
+                            Forms\Components\Textarea::make('meta_description')
+                                ->columnSpanFull(),
+                            Forms\Components\TextInput::make('canonical_url')
+                                ->label('Canonical URL')
+                                ->url(),
+                            Forms\Components\KeyValue::make('schema_markup')
+                                ->label('Schema Markup (JSON-LD)'),
+                        ]),
+                    Tabs\Tab::make('Page Settings')
+                        ->schema([
+                            Forms\Components\Select::make('tenant_id')
+                                ->relationship('tenant', 'name')
+                                ->required(),
+                            Forms\Components\Toggle::make('is_active')
+                                ->default(true)
+                                ->required(),
+                            Forms\Components\Select::make('index_status')
+                                ->options([
+                                    'index' => 'Index',
+                                    'noindex' => 'No Index',
+                                ])
+                                ->default('index')
+                                ->required(),
+                            Forms\Components\Select::make('follow_status')
+                                ->options([
+                                    'follow' => 'Follow',
+                                    'nofollow' => 'No Follow',
+                                ])
+                                ->default('follow')
+                                ->required(),
+                            Forms\Components\Select::make('content_type')
+                                ->options([
+                                    'programs' => 'Programs',
+                                    'jobs' => 'Jobs',
+                                    'mixed' => 'Mixed',
+                                ])
+                                ->default('mixed')
+                                ->required(),
+                            Forms\Components\TextInput::make('items_per_page')
+                                ->numeric()
+                                ->default(20),
+                            Forms\Components\KeyValue::make('target_filters')
+                                ->label('Target Filters'),
+                        ]),
+                ])->columnSpanFull()
             ]);
     }
 
@@ -74,6 +114,7 @@ class SeoLandingResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
