@@ -23,27 +23,38 @@ class AdminResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->dehydrateStateUsing(fn($state) => Hash::make($state))
-                    ->dehydrated(fn($state) => filled($state))
-                    ->required(fn(string $context): bool => $context === 'create'),
-                Forms\Components\Select::make('role')
-                    ->options([
-                        'superadmin' => 'Super Admin',
-                        'admin' => 'Admin',
-                        'support' => 'Support',
+                Forms\Components\Section::make('Admin Details')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('email')
+                            ->email()
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('password')
+                            ->password()
+                            ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                            ->dehydrated(fn($state) => filled($state))
+                            ->required(fn(string $context): bool => $context === 'create')
+                            ->maxLength(255)
+                            ->helperText('Leave blank to keep the current password.'),
+                        Forms\Components\Select::make('role')
+                            ->options([
+                                'superadmin' => 'Super Admin',
+                                'admin' => 'Admin',
+                                'support' => 'Support',
+                            ])
+                            ->required(),
+                        Forms\Components\KeyValue::make('settings')
+                            ->label('Additional Settings')
+                            ->columnSpanFull(),
+                        Forms\Components\Toggle::make('is_active')
+                            ->default(true)
+                            ->required(),
                     ])
-                    ->required(),
-                Forms\Components\Toggle::make('is_active')
-                    ->required(),
             ]);
     }
 
@@ -56,6 +67,7 @@ class AdminResource extends Resource
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('role')
+                    ->badge()
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
