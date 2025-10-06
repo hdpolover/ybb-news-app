@@ -22,27 +22,70 @@ class EmailCampaignResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('tenant_id')
-                    ->relationship('tenant', 'name')
-                    ->required(),
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('subject')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Select::make('status')
-                    ->options([
-                        'draft' => 'Draft',
-                        'scheduled' => 'Scheduled',
-                        'sending' => 'Sending',
-                        'sent' => 'Sent',
-                        'cancelled' => 'Cancelled',
+                Forms\Components\Section::make('Campaign Details')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\Select::make('tenant_id')
+                            ->relationship('tenant', 'name')
+                            ->required(),
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('subject')
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('preview_text')
+                            ->helperText('This text appears after the subject line in most email clients.')
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+                    ]),
+
+                Forms\Components\Section::make('Content')
+                    ->schema([
+                        Forms\Components\TextInput::make('template')
+                            ->helperText('Optional: Specify a template file name.'),
+                        Forms\Components\RichEditor::make('content')
+                            ->required()
+                            ->columnSpanFull(),
+                    ]),
+
+                Forms\Components\Section::make('Scheduling & Recipients')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\Select::make('type')
+                            ->options([
+                                'newsletter' => 'Newsletter',
+                                'digest' => 'Digest',
+                                'announcement' => 'Announcement',
+                                'promotional' => 'Promotional',
+                            ])
+                            ->default('newsletter')
+                            ->required(),
+                        Forms\Components\Select::make('status')
+                            ->options([
+                                'draft' => 'Draft',
+                                'scheduled' => 'Scheduled',
+                                'sending' => 'Sending',
+                                'sent' => 'Sent',
+                                'cancelled' => 'Cancelled',
+                            ])
+                            ->default('draft')
+                            ->required(),
+                        Forms\Components\DateTimePicker::make('scheduled_at')
+                            ->helperText('Leave blank to send immediately (if status is not draft).'),
+                        Forms\Components\KeyValue::make('recipient_criteria')
+                            ->label('Recipient Criteria')
+                            ->helperText('Define rules to segment your audience.')
+                            ->columnSpanFull(),
+                    ]),
+
+                Forms\Components\Section::make('Advanced Settings')
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\KeyValue::make('settings')
+                            ->label('Additional Settings'),
                     ])
-                    ->required(),
-                Forms\Components\DateTimePicker::make('scheduled_at'),
-                Forms\Components\RichEditor::make('content')
-                    ->columnSpanFull(),
             ]);
     }
 
@@ -72,6 +115,7 @@ class EmailCampaignResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
