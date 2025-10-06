@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             TenantSeeder::class,
             UserSeeder::class,
             DemoContentSeeder::class,
+            AdminsTableSeeder::class
         ]);
     }
 }

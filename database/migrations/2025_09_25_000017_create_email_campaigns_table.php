@@ -32,7 +32,7 @@ return new class extends Migration {
             $table->decimal('bounce_rate', 5, 2)->default(0.00);
             $table->string('template')->nullable();
             $table->json('settings')->nullable();
-            $table->uuid('created_by');
+            $table->uuid('created_by')->nullable();
             $table->uuid('updated_by')->nullable();
             $table->timestamps();
 

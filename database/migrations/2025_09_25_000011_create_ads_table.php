@@ -27,7 +27,7 @@ return new class extends Migration {
             $table->integer('current_clicks')->default(0);
             $table->decimal('click_rate', 5, 2)->default(0.00);
             $table->string('status')->default('active');
-            $table->uuid('created_by');
+            $table->uuid('created_by')->nullable();
             $table->uuid('updated_by')->nullable();
             $table->timestamps();
 
