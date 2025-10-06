@@ -26,7 +26,7 @@ return new class extends Migration {
             $table->boolean('is_active')->default(1);
             $table->enum('index_status', ['index', 'noindex'])->default('index');
             $table->enum('follow_status', ['follow', 'nofollow'])->default('follow');
-            $table->uuid('created_by');
+            $table->uuid('created_by')->nullable();
             $table->uuid('updated_by')->nullable();
             $table->timestamps();
 
