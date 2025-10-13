@@ -15,7 +15,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
 {
     use HasFactory, Notifiable, HasUuids, HasRoles;
 
-    // ... (property $fillable, $hidden, $casts tetap sama) ...
     protected $fillable = [
         'name',
         'email',

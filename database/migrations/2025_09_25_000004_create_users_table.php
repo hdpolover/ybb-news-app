@@ -13,7 +13,6 @@ return new class extends Migration {
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('role', ['admin', 'editor', 'author', 'seo', 'moderator', 'analyst', 'user'])->default('user');
             $table->string('avatar_url')->nullable();
             $table->text('bio')->nullable();
             $table->boolean('is_active')->default(1);

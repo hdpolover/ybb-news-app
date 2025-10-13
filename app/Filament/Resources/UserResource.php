@@ -52,17 +52,6 @@ class UserResource extends Resource
                             ->dehydrated(fn($state) => filled($state))
                             ->required(fn(string $context): bool => $context === 'create')
                             ->helperText('Leave blank to keep the current password.'),
-                        Forms\Components\Select::make('role')
-                            ->options([
-                                'admin' => 'Admin',
-                                'editor' => 'Editor',
-                                'author' => 'Author',
-                                'seo' => 'SEO',
-                                'moderator' => 'Moderator',
-                                'analyst' => 'Analyst',
-                                'user' => 'User',
-                            ])
-                            ->required(),
                         Forms\Components\Toggle::make('is_active')
                             ->default(true)
                             ->required(),
@@ -87,9 +76,6 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('role')
-                    ->badge()
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
