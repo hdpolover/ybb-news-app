@@ -27,6 +27,8 @@ class UserResource extends Resource
                     ->columns(2)
                     ->schema([
                         Forms\Components\FileUpload::make('avatar_url')
+                            ->disk('public')
+                            ->directory('avatar')
                             ->label('Avatar')
                             ->image()
                             ->avatar(),
@@ -79,6 +81,7 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('avatar_url')
+                    ->disk('public')
                     ->label('Avatar')
                     ->circular(),
                 Tables\Columns\TextColumn::make('name')
