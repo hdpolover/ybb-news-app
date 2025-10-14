@@ -18,7 +18,6 @@ class UserSeeder extends Seeder
             'name' => 'Super Admin',
             'email' => 'admin@ybb-cms.local',
             'password' => Hash::make('password'),
-            'role' => 'admin',
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),

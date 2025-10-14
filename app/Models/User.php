@@ -8,13 +8,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, HasAvatar
 {
     use HasFactory, Notifiable, HasUuids, HasRoles;
 
-    // ... (property $fillable, $hidden, $casts tetap sama) ...
     protected $fillable = [
         'name',
         'email',
@@ -47,5 +47,10 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         return true;
+    }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return 'storage/' . $this->avatar_url;
     }
 }

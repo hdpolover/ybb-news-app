@@ -63,6 +63,8 @@ class AdResource extends Resource
                     ->schema([
                         // Banner Type Fields
                         Forms\Components\FileUpload::make('content.image_url')
+                            ->disk('public')
+                            ->directory('ads')
                             ->label('Banner Image')
                             ->visible(fn(Get $get) => $get('type') === 'banner'),
                         Forms\Components\TextInput::make('content.target_link')
