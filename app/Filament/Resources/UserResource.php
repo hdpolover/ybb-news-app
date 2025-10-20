@@ -46,12 +46,24 @@ class UserResource extends Resource
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255),
+
+                        // --- TAMBAHKAN FIELD INI ---
+                        Forms\Components\Select::make('roles')
+                            ->multiple()
+                            ->relationship('roles', 'name') // Menggunakan relasi 'roles' (dari Spatie)
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->columnSpanFull(),
+                        // --- SELESAI ---
+
                         Forms\Components\TextInput::make('password')
                             ->password()
                             ->dehydrateStateUsing(fn($state) => Hash::make($state))
                             ->dehydrated(fn($state) => filled($state))
                             ->required(fn(string $context): bool => $context === 'create')
-                            ->helperText('Leave blank to keep the current password.'),
+                            ->helperText('Leave blank to keep the current password.')
+                            ->columnSpanFull(), // Dibuat full-width
                         Forms\Components\Toggle::make('is_active')
                             ->default(true)
                             ->required(),
@@ -77,6 +89,14 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
+
+                // --- TAMBAHKAN KOLOM INI ---
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->label('Roles')
+                    ->badge() // Tampilkan sebagai badge
+                    ->searchable(),
+                // --- SELESAI ---
+
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
