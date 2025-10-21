@@ -90,11 +90,6 @@ class PostResource extends Resource
                             Forms\Components\DateTimePicker::make('published_at'),
                             Forms\Components\DateTimePicker::make('scheduled_at')
                                 ->visible(fn(Get $get): bool => $get('status') === 'scheduled'),
-                            Forms\Components\Select::make('terms')
-                                ->relationship('terms', 'name')
-                                ->multiple()
-                                ->preload()
-                                ->searchable(),
                             Forms\Components\Select::make('created_by')
                                 ->relationship('author', 'name')
                                 ->required(),
