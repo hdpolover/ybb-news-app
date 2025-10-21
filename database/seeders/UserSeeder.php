@@ -15,16 +15,15 @@ class UserSeeder extends Seeder
         $userId = Str::uuid();
         DB::table('users')->insertOrIgnore([
             'id' => $userId,
-            'name' => 'Super Admin',
-            'email' => 'admin@ybb-cms.local',
-            'password' => Hash::make('password'),
+            'name' => 'Author Baik',
+            'email' => 'author@gmail.com',
+            'password' => Hash::make('Admin@123'),
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        // Ambil role TenantOwner
-        $role = DB::table('roles')->where('name', 'TenantOwner')->first();
+        $role = DB::table('roles')->where('name', 'Author')->first();
 
         if ($role) {
             DB::table('model_has_roles')->insertOrIgnore([
