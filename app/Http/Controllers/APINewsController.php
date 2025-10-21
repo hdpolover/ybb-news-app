@@ -12,9 +12,9 @@ class APINewsController extends Controller
         return response()->json($news);
     }
 
-    public function read($tenant_id, $news_id)
+    public function read($tenant_id, $news_slug)
     {
-        $news = Post::where('tenant_id', $tenant_id)->where('id', $news_id)->first();
+        $news = Post::where('tenant_id', $tenant_id)->where('slug', $news_slug)->first();
         return response()->json($news);
     }
 }
