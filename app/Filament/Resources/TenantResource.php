@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+
 class TenantResource extends Resource
 {
     protected static ?string $model = Tenant::class;
@@ -109,6 +110,9 @@ class TenantResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->copyable()
+                    ->copyMessage('ID telah disalin'),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('domain')
