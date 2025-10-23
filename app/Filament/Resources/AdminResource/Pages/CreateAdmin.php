@@ -9,4 +9,15 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateAdmin extends CreateRecord
 {
     protected static string $resource = AdminResource::class;
+
+    protected function getFormActions(): array
+    {
+        return [
+            Actions\CreateAction::make()
+                ->label('Save'),
+
+            Actions\CreateAction::make('createAnother')
+                ->label('Save & create another'),
+        ];
+    }
 }

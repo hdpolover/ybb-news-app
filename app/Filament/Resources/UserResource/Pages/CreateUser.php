@@ -9,4 +9,15 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateUser extends CreateRecord
 {
     protected static string $resource = UserResource::class;
+
+    protected function getFormActions(): array
+    {
+        return [
+            Actions\CreateAction::make()
+                ->label('Save'),
+
+            Actions\CreateAction::make('createAnother')
+                ->label('Save & create another'),
+        ];
+    }
 }
