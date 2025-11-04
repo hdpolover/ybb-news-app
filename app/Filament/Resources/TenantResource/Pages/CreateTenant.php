@@ -94,8 +94,18 @@ class CreateTenant extends CreateRecord
                             Forms\Components\TextInput::make('email_from_address')
                                 ->label('Alamat Email Pengirim')
                                 ->email(),
-                            Forms\Components\TagsInput::make('enabled_features')
-                                ->label('Fitur yang Diaktifkan'),
+                            Forms\Components\CheckboxList::make('enabled_features')
+                                ->label('Fitur yang Diaktifkan')
+                                ->options([
+                                    'programs' => 'Manajemen Program',
+                                    'jobs' => 'Manajemen Lowongan Kerja',
+                                    'news' => 'Manajemen Berita',
+                                    'seo' => 'Pengaturan SEO Lanjutan',
+                                    'ads' => 'Manajemen Iklan/AdSense',
+                                    'newsletter' => 'Layanan Newsletter',
+                                ])
+                                ->columns(2)
+                                ->required(),
                             Forms\Components\KeyValue::make('settings')
                                 ->label('Pengaturan Tambahan'),
                         ])->columns(2),
