@@ -43,9 +43,19 @@ class AdResource extends Resource
                             ])
                             ->live()
                             ->required(),
-                        Forms\Components\TextInput::make('placement')
+                        Forms\Components\CheckboxList::make('placement')
+                            ->options([
+                                'sidebar_top' => 'Sidebar - Atas',
+                                'sidebar_bottom' => 'Sidebar - Bawah',
+                                'post_top' => 'Artikel - Atas',
+                                'post_middle' => 'Artikel - Tengah (setelah paragraf ke-3)',
+                                'post_bottom' => 'Artikel - Bawah',
+                                'header_banner' => 'Banner Header',
+                                'footer_banner' => 'Banner Footer',
+                            ])
+                            ->label('Placement')
                             ->required()
-                            ->helperText('e.g., sidebar_top, post_bottom'),
+                            ->columns(2),
                         Forms\Components\Select::make('status')
                             ->options([
                                 'active' => 'Active',

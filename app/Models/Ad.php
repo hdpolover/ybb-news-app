@@ -40,6 +40,7 @@ class Ad extends Model
         'targeting' => 'array',
         'settings' => 'array',
         'is_active' => 'boolean',
+        'placement' => 'array',
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'priority' => 'integer',

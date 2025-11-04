@@ -13,7 +13,7 @@ return new class extends Migration {
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('type')->default('banner');
-            $table->string('placement');
+            $table->json('placement');
             $table->json('content');
             $table->json('targeting')->nullable();
             $table->json('settings')->nullable();
