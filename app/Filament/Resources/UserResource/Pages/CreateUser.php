@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateUser extends CreateRecord
@@ -13,10 +12,9 @@ class CreateUser extends CreateRecord
     protected function getFormActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            $this->getCreateFormAction()
                 ->label('Save'),
-
-            Actions\CreateAction::make('createAnother')
+            $this->getCreateAnotherFormAction()
                 ->label('Save & create another'),
         ];
     }

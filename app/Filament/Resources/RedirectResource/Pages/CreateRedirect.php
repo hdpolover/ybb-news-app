@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\RedirectResource\Pages;
 
 use App\Filament\Resources\RedirectResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateRedirect extends CreateRecord
@@ -13,10 +12,9 @@ class CreateRedirect extends CreateRecord
     protected function getFormActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            $this->getCreateFormAction()
                 ->label('Save'),
-
-            Actions\CreateAction::make('createAnother')
+            $this->getCreateAnotherFormAction()
                 ->label('Save & create another'),
         ];
     }

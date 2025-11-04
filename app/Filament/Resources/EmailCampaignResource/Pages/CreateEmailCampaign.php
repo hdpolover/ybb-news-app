@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\EmailCampaignResource\Pages;
 
 use App\Filament\Resources\EmailCampaignResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateEmailCampaign extends CreateRecord
@@ -13,10 +12,9 @@ class CreateEmailCampaign extends CreateRecord
     protected function getFormActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            $this->getCreateFormAction()
                 ->label('Save'),
-
-            Actions\CreateAction::make('createAnother')
+            $this->getCreateAnotherFormAction()
                 ->label('Save & create another'),
         ];
     }
