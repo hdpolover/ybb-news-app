@@ -54,7 +54,9 @@ class Post extends Model
 
     public function terms(): BelongsToMany
     {
-        return $this->belongsToMany(Term::class, 'term_post');
+        return $this->belongsToMany(Term::class, 'term_post')
+            ->using(TermPost::class)
+            ->withPivot('tenant_id');
     }
 
     public function program(): HasOne
