@@ -7,6 +7,7 @@ use App\Models\Post;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -93,6 +94,16 @@ class PostResource extends Resource
                             Forms\Components\Select::make('created_by')
                                 ->relationship('author', 'name')
                                 ->required(),
+                            Forms\Components\Select::make('terms')
+                                ->label('Categories')
+                                ->relationship(
+                                    name: 'terms',
+                                    titleAttribute: 'name',
+                                    modifyQueryUsing: fn(Builder $query) => $query->where('type', 'category')
+                                )
+                                ->multiple()
+                                ->preload()
+                                ->searchable(),
                         ]),
                 ])->columnSpanFull(),
 

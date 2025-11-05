@@ -8,6 +8,7 @@ use Filament\Actions as FilamentActions;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Str;
 use Filament\Forms\Components\Tabs;
@@ -112,6 +113,16 @@ class EditPost extends EditRecord
                             Forms\Components\Select::make('created_by')
                                 ->relationship('author', 'name')
                                 ->required(),
+                            Forms\Components\Select::make('terms')
+                                ->label('Categories')
+                                ->relationship(
+                                    name: 'terms',
+                                    titleAttribute: 'name',
+                                    modifyQueryUsing: fn(Builder $query) => $query->where('type', 'category')
+                                )
+                                ->multiple()
+                                ->preload()
+                                ->searchable(),
 
                             // <-- Tombol Aksi Dimasukkan DI SINI (di dalam Tab terakhir)
                             FormActions::make([

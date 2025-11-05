@@ -7,6 +7,7 @@ use App\Models\Post;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Str;
 use Filament\Forms\Components\Tabs;
@@ -101,6 +102,16 @@ class CreatePost extends CreateRecord
                             Forms\Components\Select::make('created_by')
                                 ->relationship('author', 'name')
                                 ->required(),
+                            Forms\Components\Select::make('terms')
+                                ->label('Categories')
+                                ->relationship(
+                                    name: 'terms',
+                                    titleAttribute: 'name',
+                                    modifyQueryUsing: fn(Builder $query) => $query->where('type', 'category')
+                                )
+                                ->multiple()
+                                ->preload()
+                                ->searchable(),
 
                             // <-- Tombol Aksi Dimasukkan DI SINI (di dalam Tab terakhir)
                             FormActions::make([
