@@ -11,6 +11,8 @@ class TrafficSourcesWidget extends ChartWidget
     protected static ?string $heading = 'Traffic Sources';
 
     protected static ?int $sort = 2;
+    
+    protected int | string | array $columnSpan = 'full';
 
     protected function getData(): array
     {
