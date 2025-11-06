@@ -9,36 +9,40 @@
                 
                 @php
                     $score = $this->getSeoScore();
-                    $color = $score >= 80 ? 'text-green-600' : ($score >= 60 ? 'text-yellow-600' : 'text-red-600');
+                    $scoreColor = $score >= 80 ? '#10b981' : ($score >= 60 ? '#f59e0b' : '#ef4444');
+                    $circumference = 2 * pi() * 88;
+                    $offset = $circumference * (1 - $score / 100);
                 @endphp
                 
-                <div class="flex items-center justify-center">
-                    <div class="relative w-48 h-48">
-                        <svg class="w-full h-full transform -rotate-90">
+                <div class="flex items-center justify-center py-4">
+                    <div class="relative" style="width: 200px; height: 200px;">
+                        <svg viewBox="0 0 200 200" class="w-full h-full transform -rotate-90">
+                            <!-- Background circle -->
                             <circle
-                                cx="96"
-                                cy="96"
+                                cx="100"
+                                cy="100"
                                 r="88"
-                                stroke="currentColor"
+                                stroke="#e5e7eb"
                                 stroke-width="12"
                                 fill="none"
-                                class="text-gray-200 dark:text-gray-700"
+                                class="dark:stroke-gray-700"
                             />
+                            <!-- Progress circle -->
                             <circle
-                                cx="96"
-                                cy="96"
+                                cx="100"
+                                cy="100"
                                 r="88"
-                                stroke="currentColor"
+                                stroke="{{ $scoreColor }}"
                                 stroke-width="12"
                                 fill="none"
-                                stroke-dasharray="{{ 2 * pi() * 88 }}"
-                                stroke-dashoffset="{{ 2 * pi() * 88 * (1 - $score / 100) }}"
-                                class="{{ $color }}"
+                                stroke-dasharray="{{ $circumference }}"
+                                stroke-dashoffset="{{ $offset }}"
+                                stroke-linecap="round"
                                 style="transition: stroke-dashoffset 0.5s ease"
                             />
                         </svg>
                         <div class="absolute inset-0 flex items-center justify-center">
-                            <span class="text-5xl font-bold {{ $color }}">{{ $score }}</span>
+                            <span class="text-5xl font-bold" style="color: {{ $scoreColor }}">{{ $score }}</span>
                         </div>
                     </div>
                 </div>
