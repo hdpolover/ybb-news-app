@@ -49,6 +49,19 @@ class TopContentWidget extends BaseWidget
             ->get()
             ->pluck('views', 'post_id');
 
+        // If no posts have views, return empty table
+        if ($topPostIds->isEmpty()) {
+            return $table
+                ->query(Post::query()->whereRaw('1 = 0'))
+                ->columns([
+                    Tables\Columns\TextColumn::make('title')
+                        ->default('No data available')
+                        ->label('Message'),
+                ])
+                ->heading('Top Content (Last 30 Days)')
+                ->paginated(false);
+        }
+
         return $table
             ->query(
                 Post::query()
