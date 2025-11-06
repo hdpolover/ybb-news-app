@@ -40,14 +40,15 @@ class SetTenantContext
                 $firstTenant = $user->tenants()->first();
                 if ($firstTenant) {
                     session(['current_tenant_id' => $firstTenant->id]);
+                    $currentTenantId = $firstTenant->id;
                 } else {
                     // User has no tenants, abort
                     abort(403, 'You are not assigned to any tenant.');
                 }
             }
 
-            // Share current tenant ID with views
-            view()->share('currentTenantId', session('current_tenant_id'));
+            // Share current tenant ID with views (use empty string if null to prevent Blade errors)
+            view()->share('currentTenantId', $currentTenantId ?? '');
         }
 
         return $next($request);
