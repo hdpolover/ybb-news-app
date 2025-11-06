@@ -45,6 +45,12 @@ class UserPanelProvider extends PanelProvider
                 \App\Filament\User\Widgets\QuickActionsWidget::class,
                 \App\Filament\User\Widgets\RecentActivityWidget::class,
             ])
+            ->navigationGroups([
+                'Content',
+                'Opportunities',
+                'Marketing',
+                'Settings',
+            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
