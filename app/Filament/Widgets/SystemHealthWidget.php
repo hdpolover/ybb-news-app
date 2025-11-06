@@ -33,8 +33,9 @@ class SystemHealthWidget extends BaseWidget
             ->count();
 
         // Get storage usage (approximate from media table)
-        $totalStorageMB = Media::sum(DB::raw('COALESCE(file_size, 0)')) / 1024 / 1024;
-        $totalStorageGB = $totalStorageMB / 1024;
+        // Size is stored in bytes
+        $totalStorageBytes = Media::sum('size') ?? 0;
+        $totalStorageGB = $totalStorageBytes / 1024 / 1024 / 1024;
         
         // Get media count
         $totalMedia = Media::count();
