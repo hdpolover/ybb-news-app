@@ -2,7 +2,7 @@
     <x-filament::section>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <!-- Create New Post -->
-            <a href="{{ route('filament.user.resources.posts.create') }}" 
+            <a href="{{ route('filament.app.resources.posts.create') }}" 
                class="flex flex-col items-center justify-center p-6 space-y-2 transition-colors border border-gray-200 rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800">
                 <x-filament::icon
                     icon="heroicon-o-document-plus"
@@ -17,7 +17,7 @@
             </a>
 
             <!-- Create New Program -->
-            <a href="{{ route('filament.user.resources.programs.create') }}" 
+            <a href="{{ route('filament.app.resources.programs.create') }}" 
                class="flex flex-col items-center justify-center p-6 space-y-2 transition-colors border border-gray-200 rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800">
                 <x-filament::icon
                     icon="heroicon-o-academic-cap"
@@ -32,7 +32,7 @@
             </a>
 
             <!-- Create New Job -->
-            <a href="{{ route('filament.user.resources.jobs.create') }}" 
+            <a href="{{ route('filament.app.resources.jobs.create') }}" 
                class="flex flex-col items-center justify-center p-6 space-y-2 transition-colors border border-gray-200 rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800">
                 <x-filament::icon
                     icon="heroicon-o-briefcase"
@@ -47,7 +47,7 @@
             </a>
 
             <!-- Upload Media -->
-            <a href="{{ route('filament.user.resources.media.create') }}" 
+            <a href="{{ route('filament.app.resources.media.create') }}" 
                class="flex flex-col items-center justify-center p-6 space-y-2 transition-colors border border-gray-200 rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800">
                 <x-filament::icon
                     icon="heroicon-o-photo"
