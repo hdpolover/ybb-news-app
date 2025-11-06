@@ -392,6 +392,25 @@ class ProgramResource extends Resource
                     ->toggle(),
             ])
             ->actions([
+                Tables\Actions\Action::make('submitForReview')
+                    ->label('Submit for Review')
+                    ->icon('heroicon-o-paper-airplane')
+                    ->color('warning')
+                    ->visible(fn (Post $record): bool => $record->status === 'draft')
+                    ->requiresConfirmation()
+                    ->action(function (Post $record) {
+                        $record->update(['status' => 'review']);
+                        
+                        \Filament\Notifications\Notification::make()
+                            ->title('Submitted for review')
+                            ->body('Your program has been submitted and editors will review it.')
+                            ->success()
+                            ->send();
+                    })
+                    ->modalHeading('Submit for Review')
+                    ->modalDescription('Your program will be sent to editors for review.')
+                    ->modalSubmitActionLabel('Submit'),
+                
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),

@@ -3,6 +3,7 @@
 namespace App\Filament\User\Resources;
 
 use App\Filament\User\Resources\PostResource\Pages;
+use App\Filament\User\Resources\PostResource\RelationManagers;
 use App\Models\Post;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -263,6 +264,27 @@ class PostResource extends Resource
                     }),
             ])
             ->actions([
+                Tables\Actions\Action::make('submitForReview')
+                    ->label('Submit for Review')
+                    ->icon('heroicon-o-paper-airplane')
+                    ->color('warning')
+                    ->visible(fn (Post $record): bool => $record->status === 'draft')
+                    ->requiresConfirmation()
+                    ->action(function (Post $record) {
+                        $record->update(['status' => 'review']);
+                        
+                        \Filament\Notifications\Notification::make()
+                            ->title('Submitted for review')
+                            ->body('Your content has been submitted and editors will review it.')
+                            ->success()
+                            ->send();
+                        
+                        // TODO: Notify editors
+                    })
+                    ->modalHeading('Submit for Review')
+                    ->modalDescription('Your content will be sent to editors for review.')
+                    ->modalSubmitActionLabel('Submit'),
+                
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
@@ -292,7 +314,8 @@ class PostResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\RevisionsRelationManager::class,
+            RelationManagers\CommentsRelationManager::class,
         ];
     }
 
