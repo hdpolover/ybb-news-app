@@ -4,6 +4,7 @@ namespace App\Filament\User\Pages;
 
 use App\Models\Post;
 use Filament\Pages\Page;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 
 class ContentCalendar extends Page
@@ -28,6 +29,7 @@ class ContentCalendar extends Page
                 $query->whereNotNull('published_at')
                     ->orWhereNotNull('scheduled_at');
             })
+            ->with('author')
             ->get();
         
         return $posts->map(function ($post) {
@@ -52,7 +54,7 @@ class ContentCalendar extends Page
                 'url' => route('filament.app.resources.posts.edit', ['record' => $post->id]),
                 'extendedProps' => [
                     'status' => $post->status,
-                    'author' => $post->user->name ?? 'Unknown',
+                    'author' => $post->author->name ?? 'Unknown',
                 ],
             ];
         })->toArray();
@@ -70,7 +72,11 @@ class ContentCalendar extends Page
         /** @var \App\Models\User|null $user */
         $user = Auth::user();
         if (!$user || !$user->can('update', $post)) {
-            $this->notify('danger', 'You are not authorized to update this post.');
+            Notification::make()
+                ->title('Unauthorized')
+                ->body('You are not authorized to update this post.')
+                ->danger()
+                ->send();
             return;
         }
         
@@ -83,6 +89,10 @@ class ContentCalendar extends Page
         
         $post->save();
         
-        $this->notify('success', 'Post date updated successfully.');
+        Notification::make()
+            ->title('Success')
+            ->body('Post date updated successfully.')
+            ->success()
+            ->send();
     }
 }
