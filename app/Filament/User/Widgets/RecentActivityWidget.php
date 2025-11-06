@@ -74,9 +74,9 @@ class RecentActivityWidget extends BaseWidget
                 Tables\Actions\Action::make('view')
                     ->icon('heroicon-m-eye')
                     ->url(fn (Post $record): string => match ($record->kind) {
-                        'program' => route('filament.user.resources.programs.edit', $record),
-                        'job' => route('filament.user.resources.jobs.edit', $record),
-                        default => route('filament.user.resources.posts.edit', $record),
+                        'program' => route('filament.app.resources.programs.edit', $record),
+                        'job' => route('filament.app.resources.jobs.edit', $record),
+                        default => route('filament.app.resources.posts.edit', $record),
                     }),
             ])
             ->heading('Recent Activity')
