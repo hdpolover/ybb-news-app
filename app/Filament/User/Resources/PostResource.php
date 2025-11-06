@@ -129,21 +129,17 @@ class PostResource extends Resource
                                 ->columnSpanFull(),
                             Forms\Components\TextInput::make('slug')
                                 ->required()
-                                ->unique(
-                                    table: Post::class,
-                                    column: 'slug',
-                                    ignoreRecord: true,
-                                    modifyRuleUsing: function ($rule, $context, $record) {
-                                        $rule = $rule->where('tenant_id', session('current_tenant_id'));
-                                        
-                                        // Explicitly ignore current record when editing
-                                        if ($context === 'edit' && $record) {
-                                            $rule = $rule->ignore($record->id);
-                                        }
-                                        
-                                        return $rule;
+                                ->rules(function ($record) {
+                                    $tenantId = session('current_tenant_id');
+                                    $rule = \Illuminate\Validation\Rule::unique('posts', 'slug')
+                                        ->where('tenant_id', $tenantId);
+                                    
+                                    if ($record) {
+                                        $rule->ignore($record->id);
                                     }
-                                )
+                                    
+                                    return ['required', $rule];
+                                })
                                 ->columnSpanFull(),
                             Forms\Components\FileUpload::make('cover_image_url')
                                 ->label('Cover Image')
