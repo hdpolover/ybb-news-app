@@ -129,13 +129,14 @@ class PostResource extends Resource
                                 ->columnSpanFull(),
                             Forms\Components\TextInput::make('slug')
                                 ->required()
-                                ->rules(function ($record) {
+                                ->rules(function ($livewire) {
                                     $tenantId = session('current_tenant_id');
                                     $rule = \Illuminate\Validation\Rule::unique('posts', 'slug')
                                         ->where('tenant_id', $tenantId);
                                     
-                                    if ($record) {
-                                        $rule->ignore($record->id);
+                                    // Check if we're editing a record
+                                    if (method_exists($livewire, 'getRecord') && $livewire->getRecord()) {
+                                        $rule->ignore($livewire->getRecord()->id);
                                     }
                                     
                                     return ['required', $rule];
