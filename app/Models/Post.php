@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Scopes\TenantScope;
 
 class Post extends Model
@@ -73,5 +74,20 @@ class Post extends Model
     public function job(): HasOne
     {
         return $this->hasOne(PtJob::class);
+    }
+
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(PostRevision::class)->orderBy('revision_number', 'desc');
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(PostComment::class)->whereNull('parent_id');
+    }
+
+    public function allComments(): HasMany
+    {
+        return $this->hasMany(PostComment::class);
     }
 }
