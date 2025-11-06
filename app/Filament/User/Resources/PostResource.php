@@ -162,15 +162,40 @@ class PostResource extends Resource
                                     'guide' => 'Guide',
                                 ])
                                 ->live()
+                                ->default('news')
                                 ->required(),
+                            Forms\Components\Select::make('status')
+                                ->options([
+                                    'draft' => 'Draft',
+                                    'review' => 'Review',
+                                    'scheduled' => 'Scheduled',
+                                    'published' => 'Published',
+                                    'archived' => 'Archived',
+                                ])
+                                ->default('draft')
+                                ->live()
+                                ->required()
+                                ->helperText('Draft: Save for later | Review: Submit for approval | Scheduled: Publish at specific time | Published: Visible now'),
+                            Forms\Components\DateTimePicker::make('published_at')
+                                ->label('Publish Date')
+                                ->visible(fn(Get $get): bool => $get('status') === 'published')
+                                ->dehydrated(fn(Get $get): bool => $get('status') === 'published')
+                                ->helperText('Leave empty to use current date/time'),
                             Forms\Components\DateTimePicker::make('scheduled_at')
-                                ->visible(fn(Get $get): bool => $get('status') === 'scheduled'),
+                                ->label('Schedule For')
+                                ->visible(fn(Get $get): bool => $get('status') === 'scheduled')
+                                ->dehydrated(fn(Get $get): bool => $get('status') === 'scheduled')
+                                ->rules(['required_if:status,scheduled'])
+                                ->helperText('Post will be published automatically at this date/time'),
                             Forms\Components\Select::make('terms')
-                                ->relationship('terms', 'name')
+                                ->relationship('terms', 'name', fn($query) => 
+                                    $query->where('tenant_id', session('current_tenant_id'))
+                                )
                                 ->multiple()
                                 ->preload()
-                                ->searchable(),
-                        ]),
+                                ->searchable()
+                                ->helperText('Categories, tags, and other taxonomies'),
+                        ])->columns(2),
                 ])->columnSpanFull(),
             ]);
     }
