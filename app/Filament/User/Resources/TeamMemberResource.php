@@ -137,14 +137,20 @@ class TeamMemberResource extends Resource
                     ->copyable()
                     ->icon('heroicon-o-envelope'),
                 
-                Tables\Columns\BadgeColumn::make('pivot.role')
+                Tables\Columns\TextColumn::make('role')
                     ->label('Role')
-                    ->colors([
-                        'danger' => 'tenant_admin',
-                        'warning' => 'editor',
-                        'success' => 'author',
-                        'secondary' => 'contributor',
-                    ])
+                    ->badge()
+                    ->state(function (User $record) use ($tenantId): string {
+                        $tenant = $record->tenants->first();
+                        return $tenant?->pivot?->role ?? 'N/A';
+                    })
+                    ->color(fn (string $state): string => match($state) {
+                        'tenant_admin' => 'danger',
+                        'editor' => 'warning',
+                        'author' => 'success',
+                        'contributor' => 'secondary',
+                        default => 'gray',
+                    })
                     ->formatStateUsing(fn (string $state): string => match($state) {
                         'tenant_admin' => 'Admin',
                         'editor' => 'Editor',
@@ -153,8 +159,12 @@ class TeamMemberResource extends Resource
                         default => ucfirst($state),
                     }),
                 
-                Tables\Columns\IconColumn::make('pivot.is_default')
+                Tables\Columns\IconColumn::make('is_default')
                     ->label('Default Tenant')
+                    ->state(function (User $record) use ($tenantId): bool {
+                        $tenant = $record->tenants->first();
+                        return (bool) ($tenant?->pivot?->is_default ?? false);
+                    })
                     ->boolean()
                     ->trueIcon('heroicon-o-star')
                     ->falseIcon('heroicon-o-star')
