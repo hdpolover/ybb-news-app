@@ -46,8 +46,7 @@ class Term extends Model
     public function posts(): BelongsToMany
     {
         return $this->belongsToMany(Post::class, 'term_post')
-            ->using(TermPost::class)
-            ->withPivot('tenant_id');
+            ->using(TermPost::class);
     }
 
     public function parent(): BelongsTo
