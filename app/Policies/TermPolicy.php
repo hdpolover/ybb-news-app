@@ -10,9 +10,9 @@ class TermPolicy
 {
     use HandlesAuthorization;
 
-    // Tidak ada permission spesifik, hanya admin/owner yang boleh
     public function before(User $user, $ability): bool|null
     {
+        // Platform admins and tenant owners have full access
         if ($user->hasRole(['TenantOwner', 'Admin'])) {
             return true;
         }
@@ -21,26 +21,31 @@ class TermPolicy
 
     public function viewAny(User $user): bool
     {
-        return false;
+        // Tenant Admin, Editor, and Author can view terms
+        return $user->hasRole(['Tenant Admin', 'Editor', 'Author']);
     }
 
     public function view(User $user, Term $term): bool
     {
-        return false;
+        // Anyone who can view any can view individual terms
+        return $user->hasRole(['Tenant Admin', 'Editor', 'Author']);
     }
 
     public function create(User $user): bool
     {
-        return false;
+        // Only Tenant Admin and Editor can create terms
+        return $user->hasRole(['Tenant Admin', 'Editor']);
     }
 
     public function update(User $user, Term $term): bool
     {
-        return false;
+        // Only Tenant Admin and Editor can update terms
+        return $user->hasRole(['Tenant Admin', 'Editor']);
     }
 
     public function delete(User $user, Term $term): bool
     {
-        return false;
+        // Only Tenant Admin and Editor can delete terms
+        return $user->hasRole(['Tenant Admin', 'Editor']);
     }
 }
