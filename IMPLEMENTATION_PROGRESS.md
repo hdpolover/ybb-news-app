@@ -174,34 +174,6 @@ This document tracks all implementation work for the YBB CMS improvements, inclu
 
 #### Week 3: Dashboard Widgets - Platform Admin
 
-**Status:** ⏳ Not Started  
-**Priority:** High  
-**Estimated Time:** 3-4 hours
-
-##### Tasks:
-- [ ] 3.1. Create `app/Filament/Widgets/PlatformStatsWidget.php`
-  - [ ] Total tenants count
-  - [ ] Active/suspended/pending tenant breakdown
-  - [ ] New tenants this month
-  - [ ] Chart: Tenant growth over time
-- [ ] 3.2. Create `app/Filament/Widgets/SystemHealthWidget.php`
-  - [ ] Total users across all tenants
-  - [ ] Total posts published
-  - [ ] Storage usage
-  - [ ] Recent system activity
-- [ ] 3.3. Register widgets in Platform panel dashboard
-- [ ] 3.4. Test widgets display correctly
-
-##### Files to Create:
-```
-app/Filament/Widgets/PlatformStatsWidget.php
-app/Filament/Widgets/SystemHealthWidget.php
-```
-
----
-
-#### Week 3: Dashboard Widgets - Platform Admin
-
 **Status:** ✅ COMPLETED  
 **Priority:** High  
 **Estimated Time:** 3-4 hours  
