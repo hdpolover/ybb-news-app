@@ -14,7 +14,6 @@ class PtProgram extends Model
     protected $table = 'pt_program';
 
     protected $fillable = [
-        'tenant_id',
         'post_id',
         'program_type',
         'organizer_name',
@@ -39,13 +38,14 @@ class PtProgram extends Model
         'extra' => 'array',
     ];
 
-    public function tenant(): BelongsTo
-    {
-        return $this->belongsTo(Tenant::class);
-    }
-
     public function post(): BelongsTo
     {
         return $this->belongsTo(Post::class);
+    }
+
+    // Access tenant through post relationship
+    public function getTenantAttribute()
+    {
+        return $this->post->tenant;
     }
 }

@@ -14,7 +14,6 @@ class PtJob extends Model
     protected $table = 'pt_job';
 
     protected $fillable = [
-        'tenant_id',
         'post_id',
         'company_name',
         'employment_type',
@@ -43,13 +42,14 @@ class PtJob extends Model
         'extra' => 'array',
     ];
 
-    public function tenant(): BelongsTo
-    {
-        return $this->belongsTo(Tenant::class);
-    }
-
     public function post(): BelongsTo
     {
         return $this->belongsTo(Post::class);
+    }
+
+    // Access tenant through post relationship
+    public function getTenantAttribute()
+    {
+        return $this->post->tenant;
     }
 }

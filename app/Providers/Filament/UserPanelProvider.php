@@ -6,6 +6,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -17,14 +18,17 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Http\Middleware\SetTenantContext;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class UserPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->id('user')
-            ->path('user')
+            ->id('app')
+            ->path('app')
             ->login()
             ->authGuard('web')
             ->colors([
@@ -37,8 +41,8 @@ class UserPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/User/Widgets'), for: 'App\\Filament\\User\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                \App\Filament\User\Widgets\TenantStatsOverview::class,
+                \App\Filament\User\Widgets\RecentPosts::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -50,9 +54,28 @@ class UserPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                SetTenantContext::class, // Add tenant context middleware
             ])
             ->authMiddleware([
                 Authenticate::class,
+            ])
+            ->userMenuItems([
+                MenuItem::make()
+                    ->label(function () {
+                        /** @var User|null $user */
+                        $user = Auth::guard('web')->user();
+                        $currentTenant = $user?->tenants()->find(session('current_tenant_id'));
+                        return $currentTenant ? "Tenant: {$currentTenant->name}" : 'Select Tenant';
+                    })
+                    ->icon('heroicon-o-building-office-2')
+                    ->url(function () {
+                        return route('filament.app.pages.switch-tenant');
+                    })
+                    ->visible(function () {
+                        /** @var User|null $user */
+                        $user = Auth::guard('web')->user();
+                        return $user && $user->tenants()->count() > 0;
+                    }),
             ]);
     }
 }

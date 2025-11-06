@@ -19,6 +19,8 @@ class UserResource extends Resource
 
     protected static ?string $navigationGroup = 'Access Control';
 
+    protected static ?int $navigationSort = 11;
+
     public static function form(Form $form): Form
     {
         return $form

@@ -24,8 +24,8 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
-            ->id('admin')
-            ->path('admin')
+            ->id('platform')
+            ->path('platform')
             ->login()
             ->authGuard('admin')
             ->colors([

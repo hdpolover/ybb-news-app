@@ -17,102 +17,106 @@ class TenantResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
 
-    protected static ?string $navigationGroup = 'Core';
+    protected static ?string $navigationGroup = 'Tenant Management';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Tabs::make('Tabs')->tabs([
-                    Forms\Components\Tabs\Tab::make('Umum')
-                        ->schema([
-                            Forms\Components\TextInput::make('name')
-                                ->label('Nama Tenant')
-                                ->required()
-                                ->maxLength(255),
-                            Forms\Components\TextInput::make('domain')
-                                ->required()
-                                ->maxLength(255),
-                            Forms\Components\Select::make('status')
-                                ->options([
-                                    'active' => 'Aktif',
-                                    'suspended' => 'Ditangguhkan',
-                                    'pending' => 'Tertunda',
-                                ])
-                                ->required(),
-                            Forms\Components\Textarea::make('description')
-                                ->label('Deskripsi')
-                                ->columnSpanFull(),
-                        ])->columns(2),
+                Forms\Components\Section::make('Basic Information')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Tenant Name')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Textarea::make('description')
+                            ->label('Description')
+                            ->rows(3)
+                            ->columnSpanFull(),
+                        Forms\Components\Select::make('status')
+                            ->options([
+                                'active' => 'Active',
+                                'pending' => 'Pending',
+                                'suspended' => 'Suspended',
+                            ])
+                            ->required(),
+                    ])->columns(2),
 
-                    Forms\Components\Tabs\Tab::make('Branding')
-                        ->schema([
-                            Forms\Components\TextInput::make('logo_url')
-                                ->label('URL Logo'),
-                            Forms\Components\TextInput::make('favicon_url')
-                                ->label('URL Favicon'),
-                            Forms\Components\ColorPicker::make('primary_color')
-                                ->label('Warna Primer'),
-                            Forms\Components\ColorPicker::make('secondary_color')
-                                ->label('Warna Sekunder'),
-                            Forms\Components\ColorPicker::make('accent_color')
-                                ->label('Warna Aksen'),
-                        ])->columns(2),
+                Forms\Components\Tabs::make('Advanced Settings')
+                    ->tabs([
+                        Forms\Components\Tabs\Tab::make('Features')
+                            ->schema([
+                                Forms\Components\CheckboxList::make('enabled_features')
+                                    ->label('Enabled Features')
+                                    ->options([
+                                        'programs' => 'Programs Management',
+                                        'jobs' => 'Jobs Management',
+                                        'news' => 'News Management',
+                                        'seo' => 'SEO Settings',
+                                        'ads' => 'Ads Management',
+                                        'newsletter' => 'Newsletter Service',
+                                    ])
+                                    ->columns(2),
+                                Forms\Components\KeyValue::make('settings')
+                                    ->label('Additional Settings'),
+                            ])->columns(1),
 
-                    Forms\Components\Tabs\Tab::make('SEO & Analytics')
-                        ->schema([
-                            Forms\Components\TextInput::make('meta_title')
-                                ->label('Meta Title'),
-                            Forms\Components\Textarea::make('meta_description')
-                                ->label('Meta Description')
-                                ->columnSpanFull(),
-                            Forms\Components\TextInput::make('og_image_url')
-                                ->label('URL Open Graph Image'),
-                            Forms\Components\TextInput::make('google_analytics_id')
-                                ->label('Google Analytics ID'),
-                            Forms\Components\TextInput::make('google_adsense_id')
-                                ->label('Google AdSense ID'),
-                            Forms\Components\TextInput::make('google_tag_manager_id')
-                                ->label('Google Tag Manager ID'),
-                        ])->columns(2),
+                        Forms\Components\Tabs\Tab::make('Branding')
+                            ->schema([
+                                Forms\Components\TextInput::make('logo_url')
+                                    ->label('Logo URL'),
+                                Forms\Components\TextInput::make('favicon_url')
+                                    ->label('Favicon URL'),
+                                Forms\Components\ColorPicker::make('primary_color')
+                                    ->label('Primary Color'),
+                                Forms\Components\ColorPicker::make('secondary_color')
+                                    ->label('Secondary Color'),
+                                Forms\Components\ColorPicker::make('accent_color')
+                                    ->label('Accent Color'),
+                            ])->columns(2),
 
-                    Forms\Components\Tabs\Tab::make('Pengaturan')
-                        ->schema([
-                            Forms\Components\TextInput::make('email_from_name')
-                                ->label('Nama Pengirim Email'),
-                            Forms\Components\TextInput::make('email_from_address')
-                                ->label('Alamat Email Pengirim')
-                                ->email(),
-                            Forms\Components\CheckboxList::make('enabled_features')
-                                ->label('Fitur yang Diaktifkan')
-                                ->options([
-                                    'programs' => 'Manajemen Program',
-                                    'jobs' => 'Manajemen Lowongan Kerja',
-                                    'news' => 'Manajemen Berita',
-                                    'seo' => 'Pengaturan SEO Lanjutan',
-                                    'ads' => 'Manajemen Iklan/AdSense',
-                                    'newsletter' => 'Layanan Newsletter',
-                                ])
-                                ->columns(2)
-                                ->required(),
-                            Forms\Components\KeyValue::make('settings')
-                                ->label('Pengaturan Tambahan'),
-                        ])->columns(2),
+                        Forms\Components\Tabs\Tab::make('SEO & Analytics')
+                            ->schema([
+                                Forms\Components\TextInput::make('meta_title')
+                                    ->label('Meta Title'),
+                                Forms\Components\Textarea::make('meta_description')
+                                    ->label('Meta Description')
+                                    ->columnSpanFull(),
+                                Forms\Components\TextInput::make('og_image_url')
+                                    ->label('Open Graph Image URL'),
+                                Forms\Components\TextInput::make('google_analytics_id')
+                                    ->label('Google Analytics ID'),
+                                Forms\Components\TextInput::make('google_adsense_id')
+                                    ->label('Google AdSense ID'),
+                                Forms\Components\TextInput::make('google_tag_manager_id')
+                                    ->label('Google Tag Manager ID'),
+                            ])->columns(2),
 
-                    Forms\Components\Tabs\Tab::make('Hukum & Privasi')
-                        ->schema([
-                            Forms\Components\Toggle::make('gdpr_enabled')
-                                ->label('Aktifkan GDPR')
-                                ->inline(false),
-                            Forms\Components\Toggle::make('ccpa_enabled')
-                                ->label('Aktifkan CCPA')
-                                ->inline(false),
-                            Forms\Components\TextInput::make('privacy_policy_url')
-                                ->label('URL Kebijakan Privasi'),
-                            Forms\Components\TextInput::make('terms_of_service_url')
-                                ->label('URL Ketentuan Layanan'),
-                        ])->columns(2),
-                ])->columnSpanFull()
+                        Forms\Components\Tabs\Tab::make('Email Settings')
+                            ->schema([
+                                Forms\Components\TextInput::make('email_from_name')
+                                    ->label('Email From Name'),
+                                Forms\Components\TextInput::make('email_from_address')
+                                    ->label('Email From Address')
+                                    ->email(),
+                            ])->columns(2),
+
+                        Forms\Components\Tabs\Tab::make('Legal & Privacy')
+                            ->schema([
+                                Forms\Components\Toggle::make('gdpr_enabled')
+                                    ->label('Enable GDPR')
+                                    ->inline(false),
+                                Forms\Components\Toggle::make('ccpa_enabled')
+                                    ->label('Enable CCPA')
+                                    ->inline(false),
+                                Forms\Components\TextInput::make('privacy_policy_url')
+                                    ->label('Privacy Policy URL'),
+                                Forms\Components\TextInput::make('terms_of_service_url')
+                                    ->label('Terms of Service URL'),
+                            ])->columns(2),
+                    ])->columnSpanFull()
             ]);
     }
 
@@ -120,13 +124,10 @@ class TenantResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
-                    ->copyable()
-                    ->copyMessage('ID telah disalin'),
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('domain')
-                    ->searchable(),
+                    ->label('Tenant Name')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
@@ -135,15 +136,30 @@ class TenantResource extends Resource
                         'suspended' => 'danger',
                         default => 'gray',
                     }),
+                Tables\Columns\TextColumn::make('users_count')
+                    ->label('Users')
+                    ->counts('users')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('posts_count')
+                    ->label('Posts')
+                    ->counts('posts')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'active' => 'Active',
+                        'pending' => 'Pending',
+                        'suspended' => 'Suspended',
+                    ]),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -166,6 +182,7 @@ class TenantResource extends Resource
         return [
             'index' => Pages\ListTenants::route('/'),
             'create' => Pages\CreateTenant::route('/create'),
+            'view' => Pages\ViewTenant::route('/{record}'),
             'edit' => Pages\EditTenant::route('/{record}/edit'),
         ];
     }

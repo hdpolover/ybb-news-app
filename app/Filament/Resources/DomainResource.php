@@ -14,9 +14,11 @@ class DomainResource extends Resource
 {
     protected static ?string $model = Domain::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-globe-americas';
+    protected static ?string $navigationIcon = 'heroicon-o-globe-alt';
 
-    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationGroup = 'Tenant Management';
+
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {

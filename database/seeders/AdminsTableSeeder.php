@@ -11,19 +11,21 @@ class AdminsTableSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('admins')->insert([
-            'id' => Str::uuid(),
-            'name' => 'Super Admin',
-            'email' => 'superadmin@gmail.com',
-            'password' => Hash::make('Admin@123'),
-            'role' => 'superadmin',
-            'is_active' => true,
-            'settings' => json_encode([
-                'theme' => 'dark',
-                'notifications' => true,
-            ]),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        DB::table('admins')->updateOrInsert(
+            ['email' => 'superadmin@gmail.com'],
+            [
+                'id' => Str::uuid(),
+                'name' => 'Super Admin',
+                'password' => Hash::make('Admin@123'),
+                'role' => 'superadmin',
+                'is_active' => true,
+                'settings' => json_encode([
+                    'theme' => 'dark',
+                    'notifications' => true,
+                ]),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
     }
 }

@@ -41,4 +41,28 @@ class Admin extends Authenticatable implements FilamentUser
     {
         return true;
     }
+
+    // Tenant relationships (for future use)
+    public function tenants()
+    {
+        return $this->belongsToMany(Tenant::class, 'admin_tenants', 'admin_id', 'tenant_id')
+            ->withPivot('assigned_at')
+            ->withTimestamps();
+    }
+
+    public function hasAccessToTenant($tenantId): bool
+    {
+        // Platform superadmins have access to all tenants
+        if ($this->role === 'superadmin') {
+            return true;
+        }
+        
+        // Check if admin is assigned to specific tenant
+        return $this->tenants()->where('tenant_id', $tenantId)->exists();
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'superadmin';
+    }
 }
