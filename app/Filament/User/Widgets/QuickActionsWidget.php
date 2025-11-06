@@ -10,5 +10,8 @@ class QuickActionsWidget extends Widget
     
     protected static string $view = 'filament.user.widgets.quick-actions-widget';
 
-    protected int | string | array $columnSpan = 'full';
+    protected int | string | array $columnSpan = [
+        'md' => 2,
+        'xl' => 2,
+    ];
 }
