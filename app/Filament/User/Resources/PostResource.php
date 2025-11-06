@@ -125,7 +125,14 @@ class PostResource extends Resource
                                 ->columnSpanFull(),
                             Forms\Components\TextInput::make('slug')
                                 ->required()
-                                ->unique(Post::class, 'slug', ignoreRecord: true)
+                                ->unique(
+                                    table: Post::class,
+                                    column: 'slug',
+                                    ignoreRecord: true,
+                                    modifyRuleUsing: function ($rule) {
+                                        return $rule->where('tenant_id', session('current_tenant_id'));
+                                    }
+                                )
                                 ->columnSpanFull(),
                             Forms\Components\FileUpload::make('cover_image_url')
                                 ->label('Cover Image')
@@ -137,8 +144,7 @@ class PostResource extends Resource
                                 ->rows(3)
                                 ->columnSpanFull(),
                             Forms\Components\RichEditor::make('content')
-                                ->columnSpanFull()
-                                ->required(),
+                                ->columnSpanFull(),
                         ]),
                     Tabs\Tab::make('SEO')
                         ->schema([
