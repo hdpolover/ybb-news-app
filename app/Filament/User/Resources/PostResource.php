@@ -12,6 +12,8 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\Tabs;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Facades\Filament;
@@ -206,6 +208,82 @@ class PostResource extends Resource
                                 ->helperText('Categories, tags, and other taxonomies'),
                         ])->columns(2),
                 ])->columnSpanFull(),
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\Section::make('Content')
+                    ->schema([
+                        Infolists\Components\TextEntry::make('title')
+                            ->size(Infolists\Components\TextEntry\TextEntrySize::Large)
+                            ->weight('bold'),
+                        Infolists\Components\TextEntry::make('slug')
+                            ->badge()
+                            ->color('gray'),
+                        Infolists\Components\ImageEntry::make('cover_image_url')
+                            ->label('Cover Image')
+                            ->disk('public')
+                            ->height(200),
+                        Infolists\Components\TextEntry::make('excerpt')
+                            ->columnSpanFull(),
+                        Infolists\Components\TextEntry::make('content')
+                            ->html()
+                            ->columnSpanFull(),
+                    ])->columns(2),
+                Infolists\Components\Section::make('Details')
+                    ->schema([
+                        Infolists\Components\TextEntry::make('kind')
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'news' => 'info',
+                                'guide' => 'success',
+                                'page' => 'gray',
+                                default => 'secondary',
+                            }),
+                        Infolists\Components\TextEntry::make('status')
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'published' => 'success',
+                                'draft' => 'gray',
+                                'scheduled' => 'warning',
+                                'review' => 'info',
+                                'archived' => 'danger',
+                                default => 'secondary',
+                            }),
+                        Infolists\Components\TextEntry::make('author.name')
+                            ->label('Author'),
+                        Infolists\Components\TextEntry::make('published_at')
+                            ->dateTime()
+                            ->placeholder('Not published'),
+                        Infolists\Components\TextEntry::make('scheduled_at')
+                            ->dateTime()
+                            ->placeholder('Not scheduled'),
+                        Infolists\Components\TextEntry::make('terms.name')
+                            ->badge()
+                            ->separator(',')
+                            ->placeholder('No terms'),
+                    ])->columns(3),
+                Infolists\Components\Section::make('SEO')
+                    ->schema([
+                        Infolists\Components\TextEntry::make('meta_title')
+                            ->placeholder('No meta title'),
+                        Infolists\Components\TextEntry::make('meta_description')
+                            ->placeholder('No meta description')
+                            ->columnSpanFull(),
+                        Infolists\Components\ImageEntry::make('og_image_url')
+                            ->label('Social Media Image')
+                            ->disk('public')
+                            ->height(100)
+                            ->placeholder('No OG image'),
+                        Infolists\Components\TextEntry::make('canonical_url')
+                            ->placeholder('No canonical URL')
+                            ->url(fn ($state) => $state)
+                            ->openUrlInNewTab(),
+                    ])->columns(2)
+                    ->collapsed(),
             ]);
     }
 
