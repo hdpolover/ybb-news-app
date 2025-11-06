@@ -41,8 +41,9 @@ class UserPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/User/Widgets'), for: 'App\\Filament\\User\\Widgets')
             ->widgets([
-                \App\Filament\User\Widgets\TenantStatsOverview::class,
-                \App\Filament\User\Widgets\RecentPosts::class,
+                \App\Filament\User\Widgets\ContentStatsWidget::class,
+                \App\Filament\User\Widgets\QuickActionsWidget::class,
+                \App\Filament\User\Widgets\RecentActivityWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
