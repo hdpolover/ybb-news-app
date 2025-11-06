@@ -115,6 +115,8 @@ class MediaResource extends Resource
                 Forms\Components\Section::make('File Details')
                     ->columns(2)
                     ->schema([
+                        Forms\Components\Hidden::make('mime_type'),
+                        Forms\Components\Hidden::make('size'),
                         Forms\Components\TextInput::make('name')
                             ->required()
                             ->maxLength(255)
