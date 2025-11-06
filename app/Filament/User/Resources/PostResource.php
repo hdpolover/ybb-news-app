@@ -133,8 +133,15 @@ class PostResource extends Resource
                                     table: Post::class,
                                     column: 'slug',
                                     ignoreRecord: true,
-                                    modifyRuleUsing: function ($rule) {
-                                        return $rule->where('tenant_id', session('current_tenant_id'));
+                                    modifyRuleUsing: function ($rule, $context, $record) {
+                                        $rule = $rule->where('tenant_id', session('current_tenant_id'));
+                                        
+                                        // Explicitly ignore current record when editing
+                                        if ($context === 'edit' && $record) {
+                                            $rule = $rule->ignore($record->id);
+                                        }
+                                        
+                                        return $rule;
                                     }
                                 )
                                 ->columnSpanFull(),
