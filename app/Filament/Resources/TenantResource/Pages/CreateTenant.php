@@ -49,13 +49,26 @@ class CreateTenant extends CreateRecord
             'updated_at' => now(),
         ]);
 
-        // Assign Tenant Admin role
-        $user->assignRole('Tenant Admin');
+        // Assign Tenant Admin role with all permissions
+        $tenantAdminRole = \Spatie\Permission\Models\Role::where('name', 'Tenant Admin')
+            ->where('guard_name', 'web')
+            ->first();
+        
+        if ($tenantAdminRole) {
+            // Ensure role has all permissions (in case seeder wasn't run)
+            if ($tenantAdminRole->permissions()->count() === 0) {
+                $allPermissions = \Spatie\Permission\Models\Permission::where('guard_name', 'web')->get();
+                $tenantAdminRole->syncPermissions($allPermissions);
+            }
+            
+            // Assign role to user
+            $user->assignRole($tenantAdminRole);
+        }
 
         Notification::make()
             ->success()
             ->title('Tenant Created with Admin')
-            ->body("Admin user '{$user->name}' has been created and linked to this tenant")
+            ->body("Admin user '{$user->name}' has been created with full permissions and linked to this tenant")
             ->send();
     }
 

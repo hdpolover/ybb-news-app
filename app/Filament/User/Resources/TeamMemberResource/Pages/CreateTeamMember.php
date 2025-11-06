@@ -62,6 +62,32 @@ class CreateTeamMember extends CreateRecord
             'is_default' => $this->cachedIsDefault ?? false,
         ]);
         
+        // Assign Spatie role based on pivot role
+        $spatieRoleName = match($this->cachedRole) {
+            'tenant_admin' => 'Tenant Admin',
+            'editor' => 'Editor',
+            'author' => 'Author',
+            'contributor' => 'Contributor',
+            default => 'Author',
+        };
+        
+        // Check if user already has this role, if not assign it
+        if (!$user->hasRole($spatieRoleName)) {
+            $role = \Spatie\Permission\Models\Role::where('name', $spatieRoleName)
+                ->where('guard_name', 'web')
+                ->first();
+            
+            if ($role) {
+                // For Tenant Admin, ensure role has all permissions
+                if ($spatieRoleName === 'Tenant Admin' && $role->permissions()->count() === 0) {
+                    $allPermissions = \Spatie\Permission\Models\Permission::where('guard_name', 'web')->get();
+                    $role->syncPermissions($allPermissions);
+                }
+                
+                $user->assignRole($role);
+            }
+        }
+        
         // TODO: Send invitation email with temporary password
         // This would be implemented with a mail job
         

@@ -77,7 +77,7 @@ class EditTeamMember extends EditRecord
 
     protected function afterSave(): void
     {
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         
         // Update pivot table
         if ($this->cachedRole !== null) {
@@ -85,6 +85,33 @@ class EditTeamMember extends EditRecord
                 'role' => $this->cachedRole,
                 'is_default' => $this->cachedIsDefault,
             ]);
+            
+            // Sync Spatie role based on pivot role
+            $spatieRoleName = match($this->cachedRole) {
+                'tenant_admin' => 'Tenant Admin',
+                'editor' => 'Editor',
+                'author' => 'Author',
+                'contributor' => 'Contributor',
+                default => 'Author',
+            };
+            
+            // Remove old role and assign new one
+            $allRoleNames = ['Tenant Admin', 'Editor', 'Author', 'Contributor'];
+            $this->record->syncRoles([]); // Remove all roles first
+            
+            $role = \Spatie\Permission\Models\Role::where('name', $spatieRoleName)
+                ->where('guard_name', 'web')
+                ->first();
+            
+            if ($role) {
+                // For Tenant Admin, ensure role has all permissions
+                if ($spatieRoleName === 'Tenant Admin' && $role->permissions()->count() === 0) {
+                    $allPermissions = \Spatie\Permission\Models\Permission::where('guard_name', 'web')->get();
+                    $role->syncPermissions($allPermissions);
+                }
+                
+                $this->record->assignRole($role);
+            }
         }
     }
 
