@@ -24,6 +24,11 @@ class SeoAudit extends Page
         $tenantId = session('tenant_id');
         $issues = [];
         
+        // Return empty array if no tenant is selected
+        if (!$tenantId) {
+            return [];
+        }
+        
         // Check for missing meta descriptions
         $postsWithoutMeta = Post::where('tenant_id', $tenantId)
             ->where('status', 'published')
@@ -132,6 +137,11 @@ class SeoAudit extends Page
     public function getRecentPosts(): array
     {
         $tenantId = session('tenant_id');
+        
+        // Return empty array if no tenant is selected
+        if (!$tenantId) {
+            return [];
+        }
         
         return Post::where('tenant_id', $tenantId)
             ->where('status', 'published')

@@ -23,6 +23,11 @@ class ContentCalendar extends Page
     {
         $tenantId = session('tenant_id');
         
+        // Return empty array if no tenant is selected
+        if (!$tenantId) {
+            return [];
+        }
+        
         $posts = Post::where('tenant_id', $tenantId)
             ->whereIn('status', ['scheduled', 'published', 'draft'])
             ->where(function ($query) {
