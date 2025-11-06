@@ -12,6 +12,7 @@ class RolePermissionSeeder extends Seeder
     {
         $map = [
             'TenantOwner' => ['*'], // semua permission
+            'Tenant Admin' => ['*'], // Full access for tenant administrators
             'Admin' => [
                 'view_posts',
                 'create_posts',
