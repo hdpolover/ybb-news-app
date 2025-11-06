@@ -15,6 +15,26 @@ class ContentPerformanceWidget extends BaseWidget
     protected function getStats(): array
     {
         $tenantId = session('tenant_id');
+        
+        // Return empty stats if no tenant is selected
+        if (!$tenantId) {
+            return [
+                Stat::make('Total Views (30d)', '0')
+                    ->description('Please select a tenant')
+                    ->descriptionIcon('heroicon-m-exclamation-triangle')
+                    ->color('warning'),
+                Stat::make('Avg. Engagement', '0:00')
+                    ->description('No tenant selected')
+                    ->color('gray'),
+                Stat::make('Published This Month', '0')
+                    ->description('No tenant selected')
+                    ->color('gray'),
+                Stat::make('Unique Visitors', '0')
+                    ->description('No tenant selected')
+                    ->color('gray'),
+            ];
+        }
+        
         $startDate = now()->subDays(30);
 
         // Total views in last 30 days
@@ -93,8 +113,12 @@ class ContentPerformanceWidget extends BaseWidget
         ];
     }
 
-    protected function getViewsChart(string $tenantId): array
+    protected function getViewsChart(?string $tenantId): array
     {
+        if (!$tenantId) {
+            return [0, 0, 0, 0, 0, 0, 0];
+        }
+        
         $data = AnalyticsEvent::where('tenant_id', $tenantId)
             ->where('event_type', 'page_view')
             ->where('created_at', '>=', now()->subDays(7))
@@ -107,8 +131,12 @@ class ContentPerformanceWidget extends BaseWidget
         return array_pad($data, 7, 0);
     }
 
-    protected function getPublishedChart(string $tenantId): array
+    protected function getPublishedChart(?string $tenantId): array
     {
+        if (!$tenantId) {
+            return [0, 0, 0, 0, 0, 0, 0];
+        }
+        
         $data = Post::where('tenant_id', $tenantId)
             ->where('status', 'published')
             ->where('published_at', '>=', now()->subDays(7))

@@ -19,6 +19,19 @@ class TopContentWidget extends BaseWidget
     public function table(Table $table): Table
     {
         $tenantId = session('tenant_id');
+        
+        if (!$tenantId) {
+            return $table
+                ->query(Post::query()->whereRaw('1 = 0'))
+                ->columns([
+                    Tables\Columns\TextColumn::make('title')
+                        ->default('No tenant selected')
+                        ->label('Message'),
+                ])
+                ->heading('Top Content (Last 30 Days)')
+                ->paginated(false);
+        }
+        
         $startDate = now()->subDays(30);
 
         // Get top posts by view count

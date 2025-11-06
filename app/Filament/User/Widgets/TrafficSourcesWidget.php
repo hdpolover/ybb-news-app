@@ -15,6 +15,20 @@ class TrafficSourcesWidget extends ChartWidget
     protected function getData(): array
     {
         $tenantId = session('tenant_id');
+        
+        if (!$tenantId) {
+            return [
+                'datasets' => [
+                    [
+                        'label' => 'Views',
+                        'data' => [0],
+                        'backgroundColor' => ['rgb(156, 163, 175)'],
+                    ],
+                ],
+                'labels' => ['No tenant selected'],
+            ];
+        }
+        
         $startDate = now()->subDays(30);
 
         $sources = AnalyticsEvent::where('tenant_id', $tenantId)
