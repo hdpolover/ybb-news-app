@@ -349,6 +349,7 @@ class TeamMemberResource extends Resource
     public static function canViewAny(): bool
     {
         // Only tenant admins and editors can manage team members
+        /** @var User|null $user */
         $user = Auth::user();
         $tenantId = session('tenant_id');
         

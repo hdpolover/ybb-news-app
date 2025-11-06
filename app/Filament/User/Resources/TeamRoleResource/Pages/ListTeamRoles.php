@@ -8,6 +8,14 @@ class ListTeamRoles extends Page
 {
     protected static string $view = 'filament.user.pages.list-team-roles';
 
+    protected static ?string $navigationIcon = 'heroicon-o-shield-check';
+    
+    protected static ?string $navigationLabel = 'Roles & Permissions';
+    
+    protected static ?string $navigationGroup = 'Settings';
+    
+    protected static ?int $navigationSort = 2;
+
     protected static ?string $title = 'Roles & Permissions';
 
     public function getHeading(): string
