@@ -10,6 +10,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
+            // @js is a Blade directive that safely converts PHP to JavaScript
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 headerToolbar: {
@@ -27,6 +28,7 @@
                 },
                 eventDrop: function(info) {
                     // Update post date when dragged
+                    // @this is a Livewire directive to call component methods
                     @this.call('updateEventDate', 
                         parseInt(info.event.id), 
                         info.event.start.toISOString()

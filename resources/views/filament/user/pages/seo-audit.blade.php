@@ -186,6 +186,7 @@
     <script>
         function generateSitemap() {
             if (confirm('This will generate a new sitemap.xml file. Continue?')) {
+                // Blade template outputs the route URL
                 fetch('{{ route('filament.app.pages.seo-audit') }}', {
                     method: 'POST',
                     headers: {
