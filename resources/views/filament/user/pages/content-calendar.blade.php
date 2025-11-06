@@ -10,7 +10,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
-            // @js is a Blade directive that safely converts PHP to JavaScript
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 headerToolbar: {
@@ -18,7 +17,7 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
                 },
-                events: @js($this->getEvents()),
+                events: {!! json_encode($events ?? []) !!},
                 editable: true,
                 droppable: true,
                 eventClick: function(info) {

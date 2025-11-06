@@ -18,8 +18,15 @@ class ContentCalendar extends Page
     protected static ?int $navigationSort = 4;
 
     protected static ?string $title = 'Content Calendar';
-
-    public function getEvents(): array
+    
+    public array $events = [];
+    
+    public function mount(): void
+    {
+        $this->events = $this->loadEvents();
+    }
+    
+    protected function loadEvents(): array
     {
         $tenantId = session('current_tenant_id');
         
@@ -28,41 +35,46 @@ class ContentCalendar extends Page
             return [];
         }
         
-        $posts = Post::where('tenant_id', $tenantId)
-            ->whereIn('status', ['scheduled', 'published', 'draft'])
-            ->where(function ($query) {
-                $query->whereNotNull('published_at')
-                    ->orWhereNotNull('scheduled_at');
-            })
-            ->with('author')
-            ->get();
-        
-        return $posts->map(function ($post) {
-            $date = $post->published_at ?? $post->scheduled_at ?? $post->created_at;
+        try {
+            $posts = Post::where('tenant_id', $tenantId)
+                ->whereIn('status', ['scheduled', 'published', 'draft'])
+                ->where(function ($query) {
+                    $query->whereNotNull('published_at')
+                        ->orWhereNotNull('scheduled_at');
+                })
+                ->with('author')
+                ->get();
             
-            return [
-                'id' => $post->id,
-                'title' => $post->title,
-                'start' => $date->toIso8601String(),
-                'backgroundColor' => match($post->status) {
-                    'published' => '#10b981',
-                    'scheduled' => '#3b82f6',
-                    'draft' => '#6b7280',
-                    default => '#6b7280',
-                },
-                'borderColor' => match($post->status) {
-                    'published' => '#059669',
-                    'scheduled' => '#2563eb',
-                    'draft' => '#4b5563',
-                    default => '#4b5563',
-                },
-                'url' => route('filament.app.resources.posts.edit', ['record' => $post->id]),
-                'extendedProps' => [
-                    'status' => $post->status,
-                    'author' => $post->author->name ?? 'Unknown',
-                ],
-            ];
-        })->toArray();
+            return $posts->map(function ($post) {
+                $date = $post->published_at ?? $post->scheduled_at ?? $post->created_at;
+                
+                return [
+                    'id' => $post->id,
+                    'title' => $post->title,
+                    'start' => $date->toIso8601String(),
+                    'backgroundColor' => match($post->status) {
+                        'published' => '#10b981',
+                        'scheduled' => '#3b82f6',
+                        'draft' => '#6b7280',
+                        default => '#6b7280',
+                    },
+                    'borderColor' => match($post->status) {
+                        'published' => '#059669',
+                        'scheduled' => '#2563eb',
+                        'draft' => '#4b5563',
+                        default => '#4b5563',
+                    },
+                    'url' => route('filament.app.resources.posts.edit', ['record' => $post->id]),
+                    'extendedProps' => [
+                        'status' => $post->status,
+                        'author' => $post->author->name ?? 'Unknown',
+                    ],
+                ];
+            })->toArray();
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('ContentCalendar getEvents error: ' . $e->getMessage());
+            return [];
+        }
     }
     
     public function updateEventDate(int $postId, string $newDate): void
@@ -93,6 +105,9 @@ class ContentCalendar extends Page
         }
         
         $post->save();
+        
+        // Refresh events
+        $this->events = $this->loadEvents();
         
         Notification::make()
             ->title('Success')

@@ -114,6 +114,8 @@ class PostResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->statePath('data')
+            ->model(Post::class)
             ->schema([
                 Tabs::make('PostTabs')->tabs([
                     Tabs\Tab::make('Content')
@@ -157,7 +159,8 @@ class PostResource extends Resource
                                 ->directory('post-og-images'),
                             Forms\Components\TextInput::make('canonical_url')
                                 ->label('Canonical URL')
-                                ->url(),
+                                ->rules(['nullable', 'url'])
+                                ->validationAttribute('canonical URL'),
                         ]),
                     Tabs\Tab::make('Details & Relations')
                         ->schema([

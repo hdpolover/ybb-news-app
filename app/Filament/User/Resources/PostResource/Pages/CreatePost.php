@@ -23,6 +23,8 @@ class CreatePost extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
+        \Illuminate\Support\Facades\Log::info('CreatePost: mutateFormDataBeforeCreate called', ['data' => $data]);
+        
         $user = Filament::auth()->user();
         $data['created_by'] = $user->id;
         $data['updated_by'] = $user->id;

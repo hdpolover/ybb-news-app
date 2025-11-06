@@ -52,7 +52,9 @@ class SetTenantContext
         }
         
         // Always share current tenant ID with views (use empty string if null to prevent Blade errors)
-        view()->share('currentTenantId', $currentTenantId ?? '');
+        // Force to string to ensure @js() directive receives a valid value
+        $sharedTenantId = $currentTenantId !== null ? (string)$currentTenantId : '';
+        view()->share('currentTenantId', $sharedTenantId);
 
         return $next($request);
     }
