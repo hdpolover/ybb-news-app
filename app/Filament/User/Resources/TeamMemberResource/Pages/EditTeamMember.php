@@ -32,7 +32,7 @@ class EditTeamMember extends EditRecord
                 ->modalHeading('Remove Team Member')
                 ->modalDescription('Are you sure you want to remove this team member from your organization?')
                 ->action(function () {
-                    $tenantId = session('tenant_id');
+                    $tenantId = session('current_tenant_id');
                     $this->record->tenants()->detach($tenantId);
                     
                     \Filament\Notifications\Notification::make()
@@ -52,7 +52,7 @@ class EditTeamMember extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         $userTenant = $this->record->tenants()->where('tenant_id', $tenantId)->first();
         
         // Add pivot data to form

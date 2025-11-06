@@ -21,7 +21,7 @@ class SeoAudit extends Page
 
     public function getSeoIssues(): array
     {
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         $issues = [];
         
         // Return empty array if no tenant is selected
@@ -136,7 +136,7 @@ class SeoAudit extends Page
     
     public function getRecentPosts(): array
     {
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         
         // Return empty array if no tenant is selected
         if (!$tenantId) {

@@ -14,7 +14,7 @@ class ContentPerformanceWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         
         // Return empty stats if no tenant is selected
         if (!$tenantId) {

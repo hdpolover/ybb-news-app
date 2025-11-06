@@ -34,7 +34,7 @@ class TeamMemberResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         
         // Get users who belong to the current tenant
         return parent::getEloquentQuery()
@@ -48,7 +48,7 @@ class TeamMemberResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         
         return $form
             ->schema([
@@ -120,7 +120,7 @@ class TeamMemberResource extends Resource
 
     public static function table(Table $table): Table
     {
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         
         return $table
             ->columns([
@@ -351,7 +351,7 @@ class TeamMemberResource extends Resource
         // Only tenant admins and editors can manage team members
         /** @var User|null $user */
         $user = Auth::user();
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         
         if (!$tenantId || !$user) {
             return false;

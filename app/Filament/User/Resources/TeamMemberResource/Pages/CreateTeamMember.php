@@ -43,7 +43,7 @@ class CreateTeamMember extends CreateRecord
 
     protected function afterCreate(): void
     {
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         $user = $this->record;
         
         // Check if user already belongs to this tenant

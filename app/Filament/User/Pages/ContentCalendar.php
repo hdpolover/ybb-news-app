@@ -21,7 +21,7 @@ class ContentCalendar extends Page
 
     public function getEvents(): array
     {
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         
         // Return empty array if no tenant is selected
         if (!$tenantId) {
@@ -67,7 +67,7 @@ class ContentCalendar extends Page
     
     public function updateEventDate(int $postId, string $newDate): void
     {
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         
         $post = Post::where('tenant_id', $tenantId)
             ->where('id', $postId)

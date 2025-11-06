@@ -18,7 +18,7 @@ class TopPerformingAdsWidget extends BaseWidget
 
     public function table(Table $table): Table
     {
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         
         return $table
             ->heading('Top Performing Ads (Last 30 Days)')

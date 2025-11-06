@@ -18,7 +18,7 @@ class TopContentWidget extends BaseWidget
 
     public function table(Table $table): Table
     {
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         
         if (!$tenantId) {
             return $table

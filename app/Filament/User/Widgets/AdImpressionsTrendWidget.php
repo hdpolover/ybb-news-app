@@ -15,7 +15,7 @@ class AdImpressionsTrendWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         
         // Get data for last 30 days
         $days = 30;

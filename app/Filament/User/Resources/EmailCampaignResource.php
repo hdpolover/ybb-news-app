@@ -255,7 +255,7 @@ class EmailCampaignResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('tenant_id', session('tenant_id'));
+            ->where('tenant_id', session('current_tenant_id'));
     }
 
     public static function getPages(): array

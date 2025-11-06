@@ -13,7 +13,7 @@ class AdPerformanceWidget extends BaseWidget
 {
     protected function getStats(): array
     {
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         
         // Get current period stats (last 30 days)
         $currentStart = now()->subDays(30);
@@ -96,9 +96,9 @@ class AdPerformanceWidget extends BaseWidget
         ];
     }
     
-    protected function getImpressionsChart(): array
+    protected function getImpressionsOverTimeChart(): array
     {
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         
         $data = AdImpression::where('tenant_id', $tenantId)
             ->where('created_at', '>=', now()->subDays(7))
@@ -111,9 +111,9 @@ class AdPerformanceWidget extends BaseWidget
         return array_pad($data, 7, 0);
     }
     
-    protected function getClicksChart(): array
+    protected function getClicksOverTimeChart(): array
     {
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         
         $data = AdClick::where('tenant_id', $tenantId)
             ->where('created_at', '>=', now()->subDays(7))

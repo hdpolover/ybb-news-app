@@ -14,7 +14,7 @@ class TrafficSourcesWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $tenantId = session('tenant_id');
+        $tenantId = session('current_tenant_id');
         
         if (!$tenantId) {
             return [

@@ -59,7 +59,7 @@ class ReviewQueue extends Page implements HasTable
         return $table
             ->query(
                 Post::query()
-                    ->where('tenant_id', session('tenant_id'))
+                    ->where('tenant_id', session('current_tenant_id'))
                     ->where('status', 'review')
                     ->with(['author', 'allComments' => function ($query) {
                         $query->latest();

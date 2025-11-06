@@ -12,7 +12,7 @@ class CreateEmailCampaign extends CreateRecord
     
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['tenant_id'] = session('tenant_id');
+        $data['tenant_id'] = session('current_tenant_id');
         $data['created_by'] = Auth::id();
         $data['updated_by'] = Auth::id();
         

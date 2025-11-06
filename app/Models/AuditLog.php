@@ -105,7 +105,7 @@ class AuditLog extends Model
         ?array $metadata = null
     ): self {
         return self::create([
-            'tenant_id' => session('tenant_id'),
+            'tenant_id' => session('current_tenant_id'),
             'user_id' => Auth::id(),
             'event' => $event,
             'auditable_type' => get_class($auditable),

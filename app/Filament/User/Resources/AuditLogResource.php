@@ -155,7 +155,7 @@ class AuditLogResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('tenant_id', session('tenant_id'))
+            ->where('tenant_id', session('current_tenant_id'))
             ->with(['user']);
     }
 
@@ -170,7 +170,7 @@ class AuditLogResource extends Resource
     {
         /** @var \App\Models\User|null $user */
         $user = Auth::user();
-        $tenantRole = $user?->getTenantRole(session('tenant_id'));
+        $tenantRole = $user?->getTenantRole(session('current_tenant_id'));
         
         // Only tenant_admin can view audit logs
         return $tenantRole === 'tenant_admin';
