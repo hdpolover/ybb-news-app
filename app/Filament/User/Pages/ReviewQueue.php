@@ -32,6 +32,7 @@ class ReviewQueue extends Page implements HasTable
 
     public static function canAccess(): bool
     {
+        /** @var \App\Models\User|null $user */
         $user = Auth::user();
         $tenantId = session('tenant_id');
         

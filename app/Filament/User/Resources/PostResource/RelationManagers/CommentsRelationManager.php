@@ -8,6 +8,7 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class CommentsRelationManager extends RelationManager
 {
@@ -103,7 +104,7 @@ class CommentsRelationManager extends RelationManager
                     ->label('Add Comment')
                     ->icon('heroicon-o-plus')
                     ->mutateFormDataUsing(function (array $data): array {
-                        $data['user_id'] = auth()->id();
+                        $data['user_id'] = Auth::id();
                         return $data;
                     }),
             ])

@@ -8,6 +8,7 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class RevisionsRelationManager extends RelationManager
 {
@@ -96,7 +97,7 @@ class RevisionsRelationManager extends RelationManager
                         
                         PostRevision::create([
                             'post_id' => $post->id,
-                            'user_id' => auth()->id(),
+                            'user_id' => Auth::id(),
                             'title' => $post->title,
                             'slug' => $post->slug,
                             'content' => $post->content,
