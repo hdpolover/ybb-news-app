@@ -25,9 +25,9 @@ class TopContentWidget extends BaseWidget
         $topPostIds = AnalyticsEvent::where('tenant_id', $tenantId)
             ->where('event_type', 'page_view')
             ->where('created_at', '>=', $startDate)
-            ->whereNotNull('metadata->post_id')
+            ->whereNotNull('custom_data->post_id')
             ->select(
-                DB::raw("JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.post_id')) as post_id"),
+                DB::raw("JSON_UNQUOTE(JSON_EXTRACT(custom_data, '$.post_id')) as post_id"),
                 DB::raw('COUNT(*) as views')
             )
             ->groupBy('post_id')

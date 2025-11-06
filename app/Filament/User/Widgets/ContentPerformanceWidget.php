@@ -37,8 +37,8 @@ class ContentPerformanceWidget extends BaseWidget
         $avgEngagement = AnalyticsEvent::where('tenant_id', $tenantId)
             ->where('event_type', 'page_view')
             ->where('created_at', '>=', $startDate)
-            ->whereNotNull('metadata->duration')
-            ->avg(DB::raw("CAST(JSON_EXTRACT(metadata, '$.duration') AS UNSIGNED)"));
+            ->whereNotNull('custom_data->duration')
+            ->avg(DB::raw("CAST(JSON_EXTRACT(custom_data, '$.duration') AS UNSIGNED)"));
 
         $avgEngagementFormatted = $avgEngagement 
             ? gmdate('i:s', (int) $avgEngagement)

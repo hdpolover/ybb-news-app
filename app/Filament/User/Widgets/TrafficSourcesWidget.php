@@ -21,7 +21,7 @@ class TrafficSourcesWidget extends ChartWidget
             ->where('event_type', 'page_view')
             ->where('created_at', '>=', $startDate)
             ->select(
-                DB::raw("COALESCE(JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.source')), 'Direct') as source"),
+                DB::raw("COALESCE(JSON_UNQUOTE(JSON_EXTRACT(custom_data, '$.source')), 'Direct') as source"),
                 DB::raw('COUNT(*) as count')
             )
             ->groupBy('source')
