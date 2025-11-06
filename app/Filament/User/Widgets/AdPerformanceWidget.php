@@ -76,13 +76,13 @@ class AdPerformanceWidget extends BaseWidget
                 ->description(abs($impressionsTrend) > 0 ? abs(round($impressionsTrend, 1)) . '% ' . ($impressionsTrend > 0 ? 'increase' : 'decrease') : 'No change')
                 ->descriptionIcon($impressionsTrend > 0 ? 'heroicon-m-arrow-trending-up' : ($impressionsTrend < 0 ? 'heroicon-m-arrow-trending-down' : 'heroicon-m-minus'))
                 ->color($impressionsTrend > 0 ? 'success' : ($impressionsTrend < 0 ? 'danger' : 'gray'))
-                ->chart($this->getImpressionsChart()),
+                ->chart($this->getImpressionsOverTimeChart()),
                 
             Stat::make('Total Clicks', number_format($currentClicks))
                 ->description(abs($clicksTrend) > 0 ? abs(round($clicksTrend, 1)) . '% ' . ($clicksTrend > 0 ? 'increase' : 'decrease') : 'No change')
                 ->descriptionIcon($clicksTrend > 0 ? 'heroicon-m-arrow-trending-up' : ($clicksTrend < 0 ? 'heroicon-m-arrow-trending-down' : 'heroicon-m-minus'))
                 ->color($clicksTrend > 0 ? 'success' : ($clicksTrend < 0 ? 'danger' : 'gray'))
-                ->chart($this->getClicksChart()),
+                ->chart($this->getClicksOverTimeChart()),
                 
             Stat::make('Click-Through Rate', round($currentCTR, 2) . '%')
                 ->description(abs($ctrTrend) > 0 ? abs(round($ctrTrend, 1)) . '% ' . ($ctrTrend > 0 ? 'increase' : 'decrease') : 'No change')
