@@ -6,6 +6,7 @@ use App\Models\Post;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 
 class SeoAudit extends Page
 {
@@ -29,6 +30,10 @@ class SeoAudit extends Page
             return [];
         }
         
+        $publishedCount = Post::where('tenant_id', $tenantId)
+            ->where('status', 'published')
+            ->count();
+        
         // Check for missing meta descriptions
         $postsWithoutMeta = Post::where('tenant_id', $tenantId)
             ->where('status', 'published')
@@ -39,12 +44,47 @@ class SeoAudit extends Page
             ->count();
         
         if ($postsWithoutMeta > 0) {
+            $percentage = round(($postsWithoutMeta / max($publishedCount, 1)) * 100);
             $issues[] = [
                 'type' => 'warning',
                 'title' => 'Missing Meta Descriptions',
-                'description' => "{$postsWithoutMeta} published posts don't have meta descriptions.",
-                'action' => 'Add meta descriptions to improve search engine visibility.',
+                'description' => "{$postsWithoutMeta} of {$publishedCount} published posts ({$percentage}%) don't have meta descriptions.",
+                'action' => 'Add 120-160 character meta descriptions to improve search engine visibility and click-through rates.',
+                'severity' => 'high',
+            ];
+        }
+        
+        // Check for short meta descriptions
+        $shortMeta = Post::where('tenant_id', $tenantId)
+            ->where('status', 'published')
+            ->whereNotNull('meta_description')
+            ->whereRaw('LENGTH(meta_description) < 120')
+            ->count();
+        
+        if ($shortMeta > 0) {
+            $issues[] = [
+                'type' => 'info',
+                'title' => 'Short Meta Descriptions',
+                'description' => "{$shortMeta} posts have meta descriptions shorter than 120 characters.",
+                'action' => 'Expand meta descriptions to 120-160 characters for better search visibility.',
                 'severity' => 'medium',
+            ];
+        }
+        
+        // Check for long meta descriptions
+        $longMeta = Post::where('tenant_id', $tenantId)
+            ->where('status', 'published')
+            ->whereNotNull('meta_description')
+            ->whereRaw('LENGTH(meta_description) > 160')
+            ->count();
+        
+        if ($longMeta > 0) {
+            $issues[] = [
+                'type' => 'info',
+                'title' => 'Long Meta Descriptions',
+                'description' => "{$longMeta} posts have meta descriptions longer than 160 characters.",
+                'action' => 'Shorten meta descriptions to 120-160 characters to avoid truncation in search results.',
+                'severity' => 'low',
             ];
         }
         
@@ -55,27 +95,60 @@ class SeoAudit extends Page
             ->count();
         
         if ($postsWithoutImages > 0) {
+            $percentage = round(($postsWithoutImages / max($publishedCount, 1)) * 100);
             $issues[] = [
                 'type' => 'warning',
                 'title' => 'Missing Featured Images',
-                'description' => "{$postsWithoutImages} published posts don't have featured images.",
-                'action' => 'Add featured images to improve social sharing and SEO.',
+                'description' => "{$postsWithoutImages} posts ({$percentage}%) don't have featured images.",
+                'action' => 'Add high-quality featured images (1200x630px recommended) to improve social sharing and SEO.',
+                'severity' => 'medium',
+            ];
+        }
+        
+        // Check for missing OG images
+        $postsWithoutOG = Post::where('tenant_id', $tenantId)
+            ->where('status', 'published')
+            ->whereNull('og_image_url')
+            ->count();
+        
+        if ($postsWithoutOG > 0) {
+            $issues[] = [
+                'type' => 'info',
+                'title' => 'Missing Open Graph Images',
+                'description' => "{$postsWithoutOG} posts don't have specific OG images for social media.",
+                'action' => 'Add OG images (1200x630px) to control how posts appear when shared on social media.',
                 'severity' => 'low',
             ];
         }
         
-        // Check for short content
-        $shortPosts = Post::where('tenant_id', $tenantId)
+        // Check for very short content (likely thin content)
+        $thinContent = Post::where('tenant_id', $tenantId)
             ->where('status', 'published')
             ->whereRaw('LENGTH(content) < 300')
             ->count();
         
-        if ($shortPosts > 0) {
+        if ($thinContent > 0) {
+            $issues[] = [
+                'type' => 'warning',
+                'title' => 'Thin Content',
+                'description' => "{$thinContent} posts have less than 300 characters (very short).",
+                'action' => 'Expand content to at least 300 words (1500+ characters) for better SEO performance.',
+                'severity' => 'high',
+            ];
+        }
+        
+        // Check for short content (300-1500 chars)
+        $shortContent = Post::where('tenant_id', $tenantId)
+            ->where('status', 'published')
+            ->whereRaw('LENGTH(content) >= 300 AND LENGTH(content) < 1500')
+            ->count();
+        
+        if ($shortContent > 0) {
             $issues[] = [
                 'type' => 'info',
                 'title' => 'Short Content',
-                'description' => "{$shortPosts} published posts have less than 300 characters.",
-                'action' => 'Consider expanding content for better SEO performance.',
+                'description' => "{$shortContent} posts have less than 300 words.",
+                'action' => 'Consider expanding content to 500+ words for comprehensive coverage and better rankings.',
                 'severity' => 'low',
             ];
         }
@@ -93,23 +166,92 @@ class SeoAudit extends Page
                 'type' => 'danger',
                 'title' => 'Duplicate Titles',
                 'description' => "{$duplicateTitles} titles are used by multiple posts.",
-                'action' => 'Make titles unique to avoid confusion and improve SEO.',
+                'action' => 'Make titles unique to avoid confusion, improve user experience, and prevent SEO cannibalization.',
                 'severity' => 'high',
             ];
         }
         
-        // Check for missing alt text on images (simplified check)
-        $postsWithImages = Post::where('tenant_id', $tenantId)
+        // Check for duplicate slugs (should not happen, but good to check)
+        $duplicateSlugs = Post::where('tenant_id', $tenantId)
             ->where('status', 'published')
-            ->whereNotNull('cover_image_url')
+            ->select('slug', DB::raw('COUNT(*) as count'))
+            ->groupBy('slug')
+            ->having('count', '>', 1)
             ->count();
         
-        if ($postsWithImages > 0) {
+        if ($duplicateSlugs > 0) {
+            $issues[] = [
+                'type' => 'danger',
+                'title' => 'Duplicate URL Slugs',
+                'description' => "{$duplicateSlugs} URL slugs are duplicated (critical issue).",
+                'action' => 'Fix immediately! Duplicate URLs cause conflicts and SEO issues.',
+                'severity' => 'high',
+            ];
+        }
+        
+        // Check for long titles
+        $longTitles = Post::where('tenant_id', $tenantId)
+            ->where('status', 'published')
+            ->whereRaw('LENGTH(title) > 60')
+            ->count();
+        
+        if ($longTitles > 0) {
             $issues[] = [
                 'type' => 'info',
-                'title' => 'Image Accessibility',
-                'description' => "Review {$postsWithImages} posts with images for proper alt text.",
-                'action' => 'Ensure all images have descriptive alt text for accessibility and SEO.',
+                'title' => 'Long Titles',
+                'description' => "{$longTitles} posts have titles longer than 60 characters.",
+                'action' => 'Keep titles between 30-60 characters to avoid truncation in search results.',
+                'severity' => 'low',
+            ];
+        }
+        
+        // Check for short titles
+        $shortTitles = Post::where('tenant_id', $tenantId)
+            ->where('status', 'published')
+            ->whereRaw('LENGTH(title) < 30')
+            ->count();
+        
+        if ($shortTitles > 0) {
+            $issues[] = [
+                'type' => 'info',
+                'title' => 'Short Titles',
+                'description' => "{$shortTitles} posts have titles shorter than 30 characters.",
+                'action' => 'Expand titles to 30-60 characters for better keyword coverage and click-through rates.',
+                'severity' => 'low',
+            ];
+        }
+        
+        // Check for missing excerpts
+        $missingExcerpts = Post::where('tenant_id', $tenantId)
+            ->where('status', 'published')
+            ->where(function ($query) {
+                $query->whereNull('excerpt')
+                    ->orWhere('excerpt', '');
+            })
+            ->count();
+        
+        if ($missingExcerpts > 0) {
+            $issues[] = [
+                'type' => 'info',
+                'title' => 'Missing Excerpts',
+                'description' => "{$missingExcerpts} posts don't have custom excerpts.",
+                'action' => 'Add compelling excerpts (150-160 characters) to improve post listings and social shares.',
+                'severity' => 'low',
+            ];
+        }
+        
+        // Check for posts without terms (categories/tags)
+        $postsWithoutTerms = Post::where('tenant_id', $tenantId)
+            ->where('status', 'published')
+            ->doesntHave('terms')
+            ->count();
+        
+        if ($postsWithoutTerms > 0) {
+            $issues[] = [
+                'type' => 'warning',
+                'title' => 'Uncategorized Content',
+                'description' => "{$postsWithoutTerms} posts don't have any categories or tags.",
+                'action' => 'Organize content with relevant categories and tags for better navigation and SEO.',
                 'severity' => 'medium',
             ];
         }
@@ -225,5 +367,81 @@ class SeoAudit extends Page
         }
         
         return $issues;
+    }
+    
+    public function getPageSpeedData(): ?array
+    {
+        $tenantId = session('current_tenant_id');
+        
+        if (!$tenantId) {
+            return null;
+        }
+        
+        // Get the tenant's primary domain
+        $tenant = \App\Models\Tenant::find($tenantId);
+        if (!$tenant || !$tenant->domain) {
+            return null;
+        }
+        
+        $url = 'https://' . $tenant->domain;
+        
+        // Cache for 1 hour to avoid hitting API limits
+        return Cache::remember("pagespeed_{$tenantId}", 3600, function () use ($url) {
+            try {
+                $response = Http::timeout(30)->get('https://www.googleapis.com/pagespeedonline/v5/runPagespeed', [
+                    'url' => $url,
+                    'strategy' => 'mobile', // or 'desktop'
+                    'category' => ['performance', 'accessibility', 'best-practices', 'seo'],
+                ]);
+                
+                if ($response->successful()) {
+                    $data = $response->json();
+                    
+                    return [
+                        'performance' => round(($data['lighthouseResult']['categories']['performance']['score'] ?? 0) * 100),
+                        'accessibility' => round(($data['lighthouseResult']['categories']['accessibility']['score'] ?? 0) * 100),
+                        'best_practices' => round(($data['lighthouseResult']['categories']['best-practices']['score'] ?? 0) * 100),
+                        'seo' => round(($data['lighthouseResult']['categories']['seo']['score'] ?? 0) * 100),
+                        'core_web_vitals' => [
+                            'lcp' => $data['lighthouseResult']['audits']['largest-contentful-paint']['displayValue'] ?? 'N/A',
+                            'fid' => $data['lighthouseResult']['audits']['max-potential-fid']['displayValue'] ?? 'N/A',
+                            'cls' => $data['lighthouseResult']['audits']['cumulative-layout-shift']['displayValue'] ?? 'N/A',
+                        ],
+                        'opportunities' => $this->extractOpportunities($data['lighthouseResult']['audits'] ?? []),
+                    ];
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('PageSpeed API Error: ' . $e->getMessage());
+            }
+            
+            return null;
+        });
+    }
+    
+    protected function extractOpportunities(array $audits): array
+    {
+        $opportunities = [];
+        
+        // Common optimization opportunities
+        $checks = [
+            'unused-css-rules' => 'Remove unused CSS',
+            'unused-javascript' => 'Remove unused JavaScript',
+            'modern-image-formats' => 'Use modern image formats (WebP, AVIF)',
+            'offscreen-images' => 'Defer offscreen images',
+            'uses-text-compression' => 'Enable text compression',
+            'uses-responsive-images' => 'Properly size images',
+            'efficient-animated-content' => 'Use video formats for animated content',
+        ];
+        
+        foreach ($checks as $key => $description) {
+            if (isset($audits[$key]) && isset($audits[$key]['score']) && $audits[$key]['score'] < 0.9) {
+                $opportunities[] = [
+                    'title' => $description,
+                    'savings' => $audits[$key]['displayValue'] ?? 'Potential savings available',
+                ];
+            }
+        }
+        
+        return array_slice($opportunities, 0, 5); // Top 5 opportunities
     }
 }

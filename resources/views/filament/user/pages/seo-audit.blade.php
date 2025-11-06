@@ -134,6 +134,83 @@
             @endif
         </div>
         
+        {{-- PageSpeed Insights --}}
+        @php
+            $pageSpeedData = $this->getPageSpeedData();
+        @endphp
+        
+        @if($pageSpeedData)
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Performance Metrics (Google PageSpeed Insights)</h3>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <div class="text-3xl font-bold {{ $pageSpeedData['performance'] >= 90 ? 'text-green-600' : ($pageSpeedData['performance'] >= 50 ? 'text-yellow-600' : 'text-red-600') }}">
+                            {{ $pageSpeedData['performance'] }}
+                        </div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">Performance</div>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <div class="text-3xl font-bold {{ $pageSpeedData['accessibility'] >= 90 ? 'text-green-600' : ($pageSpeedData['accessibility'] >= 50 ? 'text-yellow-600' : 'text-red-600') }}">
+                            {{ $pageSpeedData['accessibility'] }}
+                        </div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">Accessibility</div>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <div class="text-3xl font-bold {{ $pageSpeedData['best_practices'] >= 90 ? 'text-green-600' : ($pageSpeedData['best_practices'] >= 50 ? 'text-yellow-600' : 'text-red-600') }}">
+                            {{ $pageSpeedData['best_practices'] }}
+                        </div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">Best Practices</div>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <div class="text-3xl font-bold {{ $pageSpeedData['seo'] >= 90 ? 'text-green-600' : ($pageSpeedData['seo'] >= 50 ? 'text-yellow-600' : 'text-red-600') }}">
+                            {{ $pageSpeedData['seo'] }}
+                        </div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">SEO Score</div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h4 class="text-md font-semibold text-gray-900 dark:text-white mb-3">Core Web Vitals</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded">
+                            <div class="text-xs text-gray-500 dark:text-gray-400">Largest Contentful Paint</div>
+                            <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ $pageSpeedData['core_web_vitals']['lcp'] }}</div>
+                        </div>
+                        <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded">
+                            <div class="text-xs text-gray-500 dark:text-gray-400">First Input Delay</div>
+                            <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ $pageSpeedData['core_web_vitals']['fid'] }}</div>
+                        </div>
+                        <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded">
+                            <div class="text-xs text-gray-500 dark:text-gray-400">Cumulative Layout Shift</div>
+                            <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ $pageSpeedData['core_web_vitals']['cls'] }}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                @if(count($pageSpeedData['opportunities']) > 0)
+                    <div>
+                        <h4 class="text-md font-semibold text-gray-900 dark:text-white mb-3">Top Optimization Opportunities</h4>
+                        <div class="space-y-2">
+                            @foreach($pageSpeedData['opportunities'] as $opportunity)
+                                <div class="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded">
+                                    <span class="text-sm text-gray-900 dark:text-white">{{ $opportunity['title'] }}</span>
+                                    <span class="text-xs text-gray-600 dark:text-gray-400">{{ $opportunity['savings'] }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+                
+                <div class="mt-4 text-xs text-gray-500 dark:text-gray-400">
+                    Data cached for 1 hour. <a href="#" onclick="event.preventDefault(); clearPageSpeedCache()" class="text-amber-600 hover:underline">Refresh now</a>
+                </div>
+            </div>
+        @endif
+        
         {{-- Recent Posts SEO Analysis --}}
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Posts SEO Analysis</h3>
@@ -210,6 +287,12 @@
                 .catch(error => {
                     alert('Error: ' + error.message);
                 });
+            }
+        }
+        
+        function clearPageSpeedCache() {
+            if (confirm('This will fetch fresh performance data from Google. Continue?')) {
+                window.location.href = '{{ route('filament.app.pages.seo-audit') }}?refresh=1';
             }
         }
     </script>
