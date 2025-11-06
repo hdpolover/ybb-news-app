@@ -36,7 +36,8 @@ class PostResource extends Resource
         $tenantId = session('current_tenant_id');
         /** @var \App\Models\User|null $user */
         $user = Filament::auth()->user();
-        $query = parent::getEloquentQuery();
+        $query = parent::getEloquentQuery()
+            ->whereIn('kind', ['page', 'news', 'guide']); // Exclude programs and jobs
         
         if ($tenantId) {
             $query->where('tenant_id', $tenantId);
@@ -158,8 +159,6 @@ class PostResource extends Resource
                                     'page' => 'Page',
                                     'news' => 'News',
                                     'guide' => 'Guide',
-                                    'program' => 'Program',
-                                    'job' => 'Job',
                                 ])
                                 ->live()
                                 ->required(),
@@ -172,26 +171,6 @@ class PostResource extends Resource
                                 ->searchable(),
                         ]),
                 ])->columnSpanFull(),
-
-                Forms\Components\Section::make('Job Details')
-                    ->schema([
-                        Forms\Components\TextInput::make('job.company_name'),
-                        Forms\Components\TextInput::make('job.employment_type'),
-                        Forms\Components\TextInput::make('job.location_city'),
-                        Forms\Components\TextInput::make('job.min_salary')->numeric(),
-                        Forms\Components\TextInput::make('job.max_salary')->numeric(),
-                        Forms\Components\TextInput::make('job.apply_url')->url(),
-                    ])
-                    ->visible(fn(Get $get): bool => $get('kind') === 'job'),
-
-                Forms\Components\Section::make('Program Details')
-                    ->schema([
-                        Forms\Components\TextInput::make('program.organizer_name'),
-                        Forms\Components\TextInput::make('program.location_text'),
-                        Forms\Components\TextInput::make('program.funding_type'),
-                        Forms\Components\TextInput::make('program.apply_url')->url(),
-                    ])
-                    ->visible(fn(Get $get): bool => $get('kind') === 'program'),
             ]);
     }
 
@@ -254,8 +233,6 @@ class PostResource extends Resource
                         'page' => 'Page',
                         'news' => 'News',
                         'guide' => 'Guide',
-                        'program' => 'Program',
-                        'job' => 'Job',
                     ])
                     ->multiple(),
                 Tables\Filters\SelectFilter::make('status')
