@@ -19,6 +19,9 @@ class SetTenantContext
     {
         /** @var User|null $user */
         $user = Auth::guard('web')->user();
+        
+        // Initialize tenant ID
+        $currentTenantId = null;
 
         // Only set tenant context for regular users, not admins
         if ($user && method_exists($user, 'defaultTenant')) {
@@ -46,10 +49,10 @@ class SetTenantContext
                     abort(403, 'You are not assigned to any tenant.');
                 }
             }
-
-            // Share current tenant ID with views (use empty string if null to prevent Blade errors)
-            view()->share('currentTenantId', $currentTenantId ?? '');
         }
+        
+        // Always share current tenant ID with views (use empty string if null to prevent Blade errors)
+        view()->share('currentTenantId', $currentTenantId ?? '');
 
         return $next($request);
     }
