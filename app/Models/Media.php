@@ -36,6 +36,8 @@ class Media extends Model
         'alt_text',
         'caption',
         'collection_name',
+        'folder',
+        'usage_count',
         'order_column',
     ];
 
