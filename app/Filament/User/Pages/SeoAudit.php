@@ -46,7 +46,7 @@ class SeoAudit extends Page
         // Check for missing featured images
         $postsWithoutImages = Post::where('tenant_id', $tenantId)
             ->where('status', 'published')
-            ->whereNull('featured_image')
+            ->whereNull('cover_image_url')
             ->count();
         
         if ($postsWithoutImages > 0) {
@@ -96,7 +96,7 @@ class SeoAudit extends Page
         // Check for missing alt text on images (simplified check)
         $postsWithImages = Post::where('tenant_id', $tenantId)
             ->where('status', 'published')
-            ->whereNotNull('featured_image')
+            ->whereNotNull('cover_image_url')
             ->count();
         
         if ($postsWithImages > 0) {
@@ -172,7 +172,7 @@ class SeoAudit extends Page
         }
         
         // Check featured image
-        if (empty($post->featured_image)) {
+        if (empty($post->cover_image_url)) {
             $score -= 15;
         }
         
@@ -206,7 +206,7 @@ class SeoAudit extends Page
             $issues[] = 'Content too short';
         }
         
-        if (empty($post->featured_image)) {
+        if (empty($post->cover_image_url)) {
             $issues[] = 'Missing featured image';
         }
         
